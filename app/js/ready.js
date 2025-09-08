@@ -107,17 +107,21 @@ document.addEventListener("DOMContentLoaded", function () {
       const dataToSend = values.map(item => ({ name: item.name, value: item.value }));
       console.log("전송할 데이터:", JSON.stringify(dataToSend));
       
-      // WebSocket을 통해 모터 위치 400으로 이동 명령 전송
-      if (window.wsManager && window.wsManager.isConnected) {
-          console.log("모터 위치 400으로 이동 명령 전송");
-          window.wsManager.moveMotor(400, 'position');
+      // DEPTH 값을 모터 위치로 변환 (depth * 100)
+      const depthItem = values.find(item => item.name === "DEPTH");
+      if (depthItem && window.wsManager && window.wsManager.isConnected) {
+          const depthValue = parseFloat(depthItem.value.replace('mm', ''));
+          const motorPosition = Math.round(depthValue * 100); // depth * 100
+          
+          console.log(`DEPTH: ${depthValue}mm → 모터 위치: ${motorPosition}`);
+          window.wsManager.moveMotor(motorPosition, 'position');
           
           // 명령 전송 후 standby.html로 이동
           setTimeout(() => {
               window.location.href = 'standby.html';
           }, 500); // 0.5초 후 페이지 이동
       } else {
-          console.warn("WebSocket이 연결되지 않았습니다.");
+          console.warn("DEPTH 값을 찾을 수 없거나 WebSocket이 연결되지 않았습니다.");
           // WebSocket이 연결되지 않아도 페이지는 이동
           window.location.href = 'standby.html';
       }
