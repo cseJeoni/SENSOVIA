@@ -216,13 +216,13 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log('[Ready.js] 모터 상태:', status);
     
     // 니들팁 연결 상태에 따른 경고 모달 제어
-    if (status.needle_tip_connected !== undefined) {
-      const modal = document.getElementById('modalOverlay');
-      if (!status.needle_tip_connected && modal) {
-        // 니들팁이 분리되면 경고 모달 표시
-        modal.classList.add('active');
-      }
-    }
+    // if (status.needle_tip_connected !== undefined) {
+    //   const modal = document.getElementById('modalOverlay');
+    //   if (!status.needle_tip_connected && modal) {
+    //     // 니들팁이 분리되면 경고 모달 표시
+    //     modal.classList.add('active');
+    //   }
+    // }
   }
 });
 
