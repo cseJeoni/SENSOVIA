@@ -133,7 +133,10 @@ class WebSocketManager {
 
         try {
             this.ws.send(JSON.stringify(command));
-            console.log('[WebSocket] 명령 전송:', command);
+            // RF 명령만 콘솔에 로그
+            if (command.cmd === 'rf_shot' || command.cmd === 'rf_dtr_high') {
+                console.log('[RF] 명령 전송:', command);
+            }
             return true;
         } catch (error) {
             console.error('[WebSocket] 명령 전송 오류:', error);
@@ -155,20 +158,17 @@ class WebSocketManager {
                 break;
                 
             case 'serial':
-                // 시리얼 통신 결과
-                console.log('[Motor] 연결 결과:', data.result);
+                // 시리얼 통신 결과 (콘솔 로그 제거)
                 this.emit('motor_connect_result', data.result);
                 break;
                 
             case 'eeprom_read':
-                // EEPROM 읽기 결과
-                console.log('[EEPROM] 읽기 결과:', data.result);
+                // EEPROM 읽기 결과 (콘솔 로그 제거)
                 this.emit('eeprom_read', data.result);
                 break;
                 
             case 'eeprom_write':
-                // EEPROM 쓰기 결과
-                console.log('[EEPROM] 쓰기 결과:', data.result);
+                // EEPROM 쓰기 결과 (콘솔 로그 제거)
                 this.emit('eeprom_write', data.result);
                 break;
                 
