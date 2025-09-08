@@ -20,7 +20,8 @@ class WebSocketManager {
             setPos: 0,
             gpio18: 'UNKNOWN',
             gpio23: 'UNKNOWN',
-            needle_tip_connected: false
+            needle_tip_connected: false,
+            rf_connected: false
         };
         
         // 자동 연결 시작
@@ -171,6 +172,18 @@ class WebSocketManager {
                 this.emit('eeprom_write', data.result);
                 break;
                 
+            case 'rf_shot':
+                // RF 샷 명령 결과
+                console.log('[RF] 샷 명령 결과:', data.result);
+                this.emit('rf_shot_result', data.result);
+                break;
+                
+            case 'rf_dtr_high':
+                // RF DTR HIGH 명령 결과
+                console.log('[RF] DTR HIGH 결과:', data.result);
+                this.emit('rf_dtr_result', data.result);
+                break;
+                
             case 'error':
                 console.error('[WebSocket] 서버 오류:', data.result);
                 this.emit('server_error', data.result);
@@ -224,6 +237,29 @@ class WebSocketManager {
     }
 
     /**
+     * RF 샷 명령 전송
+     */
+    sendRFShot(intensity, rfTime) {
+        const command = {
+            cmd: 'rf_shot',
+            intensity: parseInt(intensity),
+            rf_time: parseInt(rfTime)
+        };
+        return this.sendCommand(command);
+    }
+
+    /**
+     * RF DTR HIGH 명령 전송 (GPIO0 제어)
+     */
+    sendRFDTRHigh(rfTime) {
+        const command = {
+            cmd: 'rf_dtr_high',
+            rf_time: parseInt(rfTime)
+        };
+        return this.sendCommand(command);
+    }
+
+    /**
      * 이벤트 리스너 등록
      */
     on(event, callback) {
@@ -268,6 +304,7 @@ class WebSocketManager {
         return {
             websocket: this.isConnected,
             motor: this.motorStatus.connected,
+            rf: this.motorStatus.rf_connected,
             motorStatus: this.motorStatus
         };
     }

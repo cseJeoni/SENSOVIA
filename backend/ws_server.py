@@ -3,6 +3,12 @@ import websockets
 import json
 import time
 from motor_threaded_controller import MotorThreadedController
+from rf_utils import (
+    open_rf_port_util, close_rf_port_util, 
+    send_rf_output_command_util, send_rf_shot_command_util,
+    build_rf_shot_command, set_dtr_high_util
+)
+import serial
 
 # EEPROM 관련 import
 try:
@@ -25,10 +31,15 @@ MTR40_OFFSET = 0x70
 gpio_available = False
 pin18 = None
 pin23 = None # pin23 객체 추가
+pin0 = None  # GPIO0 for RF DTR control
 needle_tip_connected = False
 
+# RF 연결 관련 변수
+rf_connection = None
+rf_connected = False
+
 try:
-    from gpiozero import DigitalInputDevice, Button
+    from gpiozero import DigitalInputDevice, Button, DigitalOutputDevice
     
     # GPIO18: 기존 DigitalInputDevice 유지
     pin18 = DigitalInputDevice(18)
@@ -36,9 +47,13 @@ try:
     # GPIO23: Button 클래스로 변경 (내부 풀업, 바운스 타임 지원)
     pin23 = Button(23, pull_up=True, bounce_time=0.2)
     
+    # GPIO0: RF DTR 제어용 출력 핀
+    pin0 = DigitalOutputDevice(0)
+    
     # 초기 니들팁 상태 설정 (is_pressed는 풀업 상태에서 LOW일 때 True)
     needle_tip_connected = pin23.is_pressed
     print(f"[GPIO23] 초기 니들팁 상태: {'연결됨' if needle_tip_connected else '분리됨'}")
+    print(f"[GPIO0] RF DTR 핀 초기화 완료")
 
     # 니들팁 연결/해제 이벤트 핸들러 정의
     def _on_tip_connected():
@@ -77,6 +92,28 @@ try:
         print(f"[MOTOR] 자동 연결 실패: {result}")
 except Exception as e:
     print(f"[MOTOR] 자동 연결 중 오류: {e}")
+
+# RF 자동 연결 시도
+try:
+    rf_connection = serial.Serial(
+        port='/dev/usb-rf',
+        baudrate=19200,
+        bytesize=8,
+        stopbits=1,
+        parity='none',
+        timeout=1
+    )
+    rf_connected = True
+    print(f"[RF] 자동 연결 성공: /dev/usb-rf")
+    
+    # RF 출력 설정 명령어 전송 (020901430100014903)
+    setup_command = bytes.fromhex('020901430100014903')
+    rf_connection.write(setup_command)
+    print(f"[RF] 출력 설정 명령어 전송: {setup_command.hex().upper()}")
+    
+except Exception as e:
+    rf_connected = False
+    print(f"[RF] 자동 연결 실패: {e}")
 
 
 # 모터 재연결 관련
@@ -193,6 +230,43 @@ async def handler(websocket):
                     mtr_version = data.get("mtrVersion", "2.0"); country = data.get("country")
                     result = read_eeprom_mtr40() if mtr_version == "4.0" else read_eeprom_mtr20(country)
                     await websocket.send(json.dumps({"type": "eeprom_read", "result": result}))
+                elif data["cmd"] == "rf_shot":
+                    # RF 샷 명령 처리
+                    if rf_connected and rf_connection:
+                        intensity = data.get("intensity", 50)  # INTENSITY 값 (기본값 50%)
+                        rf_time = data.get("rf_time", 60)      # RF 시간 값 (기본값 60ms)
+                        
+                        # 1MHz 고정, level과 ontime은 같은 값으로 설정
+                        frame = build_rf_shot_command(
+                            rf_1MHz_checked=True,
+                            rf_2MHz_checked=False, 
+                            level_val=intensity,
+                            ontime_val=rf_time
+                        )
+                        
+                        rf_connection.write(frame)
+                        print(f"[RF] 샷 명령 전송: 1MHz, Level:{intensity}, OnTime:{rf_time}ms")
+                        await websocket.send(json.dumps({"type": "rf_shot", "result": "RF 샷 명령 전송 완료"}))
+                    else:
+                        await websocket.send(json.dumps({"type": "rf_shot", "result": "RF 연결되지 않음"}))
+                elif data["cmd"] == "rf_dtr_high":
+                    # RF DTR HIGH 명령 처리 (GPIO0 제어)
+                    if gpio_available and pin0:
+                        rf_time = data.get("rf_time", 60)  # RF 시간 값 (ms)
+                        
+                        # DTR HIGH 설정
+                        pin0.on()
+                        print(f"[GPIO0] DTR HIGH 설정 ({rf_time}ms)")
+                        
+                        # 지정된 시간만큼 대기 후 LOW로 변경
+                        await asyncio.sleep(rf_time / 1000.0)  # ms를 초로 변환
+                        
+                        pin0.off()
+                        print(f"[GPIO0] DTR LOW 설정")
+                        
+                        await websocket.send(json.dumps({"type": "rf_dtr_high", "result": f"DTR {rf_time}ms 동안 HIGH 설정 완료"}))
+                    else:
+                        await websocket.send(json.dumps({"type": "rf_dtr_high", "result": "GPIO 사용 불가"}))
                 else:
                     await websocket.send(json.dumps({"type": "error", "result": "알 수 없는 명령어"}))
             except Exception as e:
@@ -255,6 +329,7 @@ async def push_motor_status():
                     "gpio18": gpio18_state, "gpio23": gpio23_state,
                     "needle_tip_connected": needle_tip_connected,
                     "motor_connected": True,
+                    "rf_connected": rf_connected,
                 }
             }
         else:
@@ -264,7 +339,7 @@ async def push_motor_status():
                     "motor_connected": False,
                     "gpio18": gpio18_state, "gpio23": gpio23_state,
                     "needle_tip_connected": needle_tip_connected,
-
+                    "rf_connected": rf_connected,
                 }
             }
 
@@ -286,9 +361,18 @@ def cleanup_gpio():
         try:
             if pin18: pin18.close()
             if pin23: pin23.close()
+            if pin0: pin0.close()
             print("[OK] GPIO 리소스 정리 완료")
         except Exception as e:
             print(f"[ERROR] GPIO 정리 오류: {e}")
+    
+    # RF 연결 정리
+    if rf_connection and rf_connection.is_open:
+        try:
+            rf_connection.close()
+            print("[OK] RF 연결 정리 완료")
+        except Exception as e:
+            print(f"[ERROR] RF 정리 오류: {e}")
     # --- [여기까지 수정] ---
 
 if __name__ == "__main__":

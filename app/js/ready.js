@@ -107,19 +107,37 @@ document.addEventListener("DOMContentLoaded", function () {
       const dataToSend = values.map(item => ({ name: item.name, value: item.value }));
       console.log("전송할 데이터:", JSON.stringify(dataToSend));
       
-      // DEPTH 값을 모터 위치로 변환 (depth * 100)
-      const depthItem = values.find(item => item.name === "DEPTH");
-      if (depthItem && window.wsManager && window.wsManager.isConnected) {
-          const depthValue = parseFloat(depthItem.value.replace('mm', ''));
-          const motorPosition = Math.round(depthValue * 100); // depth * 100
+      if (window.wsManager && window.wsManager.isConnected) {
+          // DEPTH 값을 모터 위치로 변환 (depth * 100)
+          const depthItem = values.find(item => item.name === "DEPTH");
+          if (depthItem) {
+              const depthValue = parseFloat(depthItem.value.replace('mm', ''));
+              const motorPosition = Math.round(depthValue * 100); // depth * 100
+              
+              console.log(`DEPTH: ${depthValue}mm → 모터 위치: ${motorPosition}`);
+              window.wsManager.moveMotor(motorPosition, 'position');
+          }
           
-          console.log(`DEPTH: ${depthValue}mm → 모터 위치: ${motorPosition}`);
-          window.wsManager.moveMotor(motorPosition, 'position');
+          // RF 명령 전송
+          const intensityItem = values.find(item => item.name === "INTENSITY");
+          const rfItem = values.find(item => item.name === "RF");
           
-          // 모터 명령만 전송하고 페이지 이동하지 않음
-          console.log("모터 명령 전송 완료");
+          if (intensityItem && rfItem) {
+              const intensity = parseInt(intensityItem.value.replace('%', ''));
+              const rfTime = parseInt(rfItem.value.replace('ms', ''));
+              
+              console.log(`RF 설정: Intensity=${intensity}%, RF Time=${rfTime}ms`);
+              
+              // RF 샷 명령 전송 (1MHz 고정, level과 ontime은 같은 값)
+              window.wsManager.sendRFShot(intensity, rfTime);
+              
+              // DTR HIGH 명령 전송 (GPIO0 제어로 RF 출력 활성화)
+              window.wsManager.sendRFDTRHigh(rfTime);
+          }
+          
+          console.log("모터 및 RF 명령 전송 완료");
       } else {
-          console.warn("DEPTH 값을 찾을 수 없거나 WebSocket이 연결되지 않았습니다.");
+          console.warn("WebSocket이 연결되지 않았습니다.");
       }
   });
 
