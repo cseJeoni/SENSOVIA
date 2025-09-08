@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const values = [
       { id: 0, name: "TIP TYPE", value: "NONE", hasButtons: false },
       { id: 1, name: "INTENSITY", value: "50%" },
-      { id: 2, name: "RF", value: "60ms" },
+      { id: 2, name: "RF", value: "2000ms" },
       { id: 3, name: "DEPTH", value: "0.8mm" },
       { id: 4, name: "MODE", value: "0.2s" },
       { id: 5, name: "DELAT TIME", value: "110ms" }
