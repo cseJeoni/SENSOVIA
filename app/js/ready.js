@@ -116,14 +116,10 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log(`DEPTH: ${depthValue}mm → 모터 위치: ${motorPosition}`);
           window.wsManager.moveMotor(motorPosition, 'position');
           
-          // 명령 전송 후 standby.html로 이동
-          setTimeout(() => {
-              window.location.href = 'standby.html';
-          }, 500); // 0.5초 후 페이지 이동
+          // 모터 명령만 전송하고 페이지 이동하지 않음
+          console.log("모터 명령 전송 완료");
       } else {
           console.warn("DEPTH 값을 찾을 수 없거나 WebSocket이 연결되지 않았습니다.");
-          // WebSocket이 연결되지 않아도 페이지는 이동
-          window.location.href = 'standby.html';
       }
   });
 
