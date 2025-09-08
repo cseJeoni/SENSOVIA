@@ -99,8 +99,8 @@ try:
         port='/dev/usb-rf',
         baudrate=19200,
         bytesize=8,
-        stopbits=1,
-        parity='none',
+        stopbits=serial.STOPBITS_ONE,
+        parity=serial.PARITY_NONE,
         timeout=1
     )
     rf_connected = True
