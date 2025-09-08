@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Layout</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
+    <link rel="stylesheet" href="../css/storage.css">
+  </head>
+  <body>
+
+
+    <div class="wrapper">
+
+
+      <!-- 여기부터 사이드바(좌측 네비게이션) -->
+
+      <div class="sidebar">
+        <ul class="sidebar-logo">
+          <li><a><img src="../img/SVA_Logo_white.png" alt="SVA Logo" style="height:40px;"></a></li>
+        </ul>
+
+        <ul class="sidebar-icon">
+          <li><a href="user.html"><img src="../icon-white/icon_User.svg"></a></li>
+          <li><a href="main.html"><img src="../icon-white/icon_Home.svg"></a></li>
+          <li><a href="information.html"><img src="../icon-white/icon_Setting.svg"></a></li>
+        </ul>
+          
+        <ul class="sidebar-DrakMode">
+          <li><a href=""><img src="../icon-white/icon_Light.svg"></a></li>
+        </ul>
+      </div>
+
+
+
+
+    <div class="body">
+
+      
+
+        
+      <!-- 여기부터 스토리지 테이블 영역 -->
+
+    <div class="storage-container">
+        <div class="storage-header">
+        <h2>STORAGE</h2>
+        <div class="actions">
+            <button id="newBtn" class="btn new">+ New</button>
+
+
+            <!-- + New 버튼 바로 아래에 추가 -->
+            <div id="keyboard-overlay" class="keyboard-overlay hidden">
+                <div class="keyboard-modal">
+                <input id="keyboard-input" 
+                        type="text" 
+                        placeholder="Enter save name" 
+                        class="keyboard-input" 
+                        readonly />
+
+                <div class="keyboard-keys">
+                <!-- Row 1 -->
+                <button data-key="Esc">ESC</button>
+                <button data-key="1">1</button>
+                <button data-key="2">2</button>
+                <button data-key="3">3</button>
+                <button data-key="4">4</button>
+                <button data-key="5">5</button>
+                <button data-key="6">6</button>
+                <button data-key="7">7</button>
+                <button data-key="8">8</button>
+                <button data-key="9">9</button>
+                <button data-key="0">0</button>
+                <button data-key="back">←</button>
+                
+              
+                <!-- Row 2 -->
+                <button data-key="~">~</button>
+                <button data-key="q">q</button>
+                <button data-key="w">w</button>
+                <button data-key="e">e</button>
+                <button data-key="r">r</button>
+                <button data-key="t">t</button>
+                <button data-key="y">y</button>
+                <button data-key="u">u</button>
+                <button data-key="i">i</button>
+                <button data-key="o">o</button>
+                <button data-key="p">p</button>
+                <button data-key="Clear">Clear</button>
+                
+
+                <!-- Row 3 -->
+                <button data-key="#">#</button>
+                <button data-key="a">a</button>
+                <button data-key="s">s</button>
+                <button data-key="d">d</button>
+                <button data-key="f">f</button>
+                <button data-key="g">g</button>
+                <button data-key="h">h</button>
+                <button data-key="j">j</button>
+                <button data-key="k">k</button>
+                <button data-key="l">l</button>
+                <button data-key="-">-</button>
+
+
+                <!-- Row 4 -->
+                <button data-key="Shift">Shift</button>
+                <button data-key="z">z</button>
+                <button data-key="x">x</button>
+                <button data-key="c">c</button>
+                <button data-key="v">v</button>
+                <button data-key="b">b</button>
+                <button data-key="n">n</button>
+                <button data-key="m">m</button>
+                <button data-key=".">.</button>
+                <button data-key="@">@</button>
+                <button class="save-key" data-key="Save">Save</button>
+                
+                </div>
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <button id="deleteBtn" class="btn delete" disabled>Delete</button>
+        </div>
+        </div>
+
+        <table class="storage-table">
+        <thead>
+            <tr>
+            <th><input type="checkbox" id="selectAll" /></th>
+            <th>NAME</th>
+            <th>DATE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+            <td><input type="checkbox" class="row-checkbox" /></td>
+            <td>SaveFile_001</td>
+            <td>2025-02-05</td>
+            </tr>
+            <tr>
+            <td><input type="checkbox" class="row-checkbox" /></td>
+            <td>SaveFile_002</td>
+            <td>2025-02-11</td>
+            </tr>
+            <tr>
+            <td><input type="checkbox" class="row-checkbox" /></td>
+            <td>SaveFile_003</td>
+            <td>2025-03-17</td>
+            </tr>
+            <tr>
+            <td><input type="checkbox" class="row-checkbox" /></td>
+            <td>SaveFile_004</td>
+            <td>2025-05-10</td>
+            </tr>
+            <tr>
+            <td><input type="checkbox" class="row-checkbox" /></td>
+            <td>SaveFile_005</td>
+            <td>2025-05-15</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+      </div> <!-- 여기까지 스토리지 테이블 영역 -->
+
+
+
+
+
+
+      <!--여기부터 우측 설정값-->
+      <div class="motor container">
+        <div class="motor-set-point container-motor">
+          <div class="motor-title-Horiz">
+            <h1 id="page-title"><a>MOTER</a></h1>
+            <div class="buttons">
+              <button id="nextBtn" class="nav-btn">&gt;</button>
+            </div>
+            <div class="buttons">
+              <button id="prevBtn" class="nav-btn" style="display: none;">&lt;</button>
+            </div>
+          </div>
+
+
+          <div class="border-bottom"></div> <!-- border-bottom -->
+
+
+          <div class="table" id="table-content">
+            <!-- 데이터 리스트가 동적으로 들어갈 자리 -->
+
+
+
+
+          <div class="moter-set">  
+
+            <div class="motor-Horiz" class="row">
+              <span class="set-point-text">INTENSITY</span>
+              <div class="value-container">
+                <button class="decrease">-</button>
+                <span class="value">55%</span>
+                <button class="increase">+</button>
+              </div>
+            </div>
+
+            <div class="border-bottom"></div> <!-- border-bottom -->
+    
+            <div class="motor-Horiz" class="row">
+              <p class="set-point-text">RF</p>
+              <div class="value-container">
+                <button class="decrease">-</button>
+                <span class="value">80ms</span>
+                <button class="increase">+</button>
+              </div>
+            </div>
+
+            <div class="border-bottom"></div> <!-- border-bottom -->
+    
+            <div class="motor-Horiz" class="row">
+              <p class="set-point-text">DEPTH</p>
+              <div class="value-container">
+                <button class="decrease">-</button>
+                <span class="value">0.9mm</span>
+                <button class="increase">+</button>
+              </div>
+            </div>
+
+            <div class="border-bottom"></div> <!-- border-bottom -->
+    
+            <div class="motor-Horiz" class="row">
+              <p class="set-point-text">MODE</p>
+              <div class="value-container">
+                <button class="decrease">-</button>
+                <span class="value">0.3s</span>
+                <button class="increase">+</button>
+              </div>
+            </div>
+
+            <div class="border-bottom"></div> <!-- border-bottom -->
+    
+            <div class="motor-Horiz" class="row">
+              <p class="set-point-text">DELAT TIME</p>
+              <div class="value-container">
+                <button class="decrease">-</button>
+                <span class="value">120ms</span>
+                <button class="increase">+</button>
+              </div>
+            </div>
+
+            
+            </div> <!-- 여기까지가 moter-set-->
+          </div>
+
+
+          <div class="but-Horiz">
+            
+            <button id="sendBtn" class="sendBtn">
+              <a href="">
+                <img src="../icon-white/icon_Call.svg" alt="icon_call">Call
+              </a>
+            </button>
+
+            <button id="sendBtn" class="sendBtn">
+                <a href="">
+                  <img src="../icon-white/icon_Save.svg" alt="icon_save">Save
+                </a>
+            </button>
+
+            <button id="sendBtn" class="sendBtn">
+                <a href="javascript:history.go(-1)">
+                  <img src="../icon-white/icon_Back.svg" alt="icon_back">Back
+                </a>
+            </button>
+          
+        
+        </div>
+          
+        </div>  <!-- 여기까지가 motor-set-point -->
+      </div> <!-- 여기까지 우측 설정값 -->
+    </div> <!-- 여기까지 body -->
+
+
+
+    </div> <!-- 여기까지 wrapper -->
+
+
+    
+
+
+
+
+
+    <script src="../js/storage.js"></script>
+
+  </body>
+</html>
+
+

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Layout</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/main.css">
+  </head>
+  <body>
+
+    <div class="wrapper">
+
+      <!-- 여기부터 사이드바(좌측 네비게이션) -->
+      <div class="sidebar">
+        <ul class="sidebar-logo">
+          <li><a><img src="../img/SVA_Logo.png" alt="SVA Logo" style="height:50px;"></a></li>
+        </ul>
+
+        <ul class="sidebar-icon">
+          <li><a href="user.html"><img src="../icon-white/icon_User.svg" alt="User"></a></li>
+          <li><a href="main.html"><img src="../icon-white/icon_Home.svg" alt="Home"></a></li>
+          <li><a href="information.html"><img src="../icon-white/icon_Setting.svg" alt="Setting"></a></li>
+        </ul>
+          
+        <ul class="sidebar-DrakMode">
+          <li><a href="admin.html"><img src="../icon-white/icon_Light.svg" alt="Light"></a></li>
+        </ul>
+      </div>
+
+      <div class="mene">
+        <div class="auto">
+          <h1 class=""><a>AUTO</a></h1>
+          <div class="buttons">
+            <button id="nextBtn" class="nav-btn">&gt;</button>
+          </div>
+        </div>
+
+        <div class="manual">
+          <h1 class=""><a>MANUAL</a></h1>
+          <div class="buttons">
+            <button id="nextBtn" class="nav-btn">&gt;</button>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- 여기까지 wrapper -->
+
+    <script src="../js/script.js"></script>
+    <script src="../js/main.js"></script>
+  </body>
+</html>

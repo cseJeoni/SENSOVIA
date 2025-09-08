@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
+    <link rel="stylesheet" href="../css/admin.css">
+  </head>
+  <body>
+    <div class="wrapper">
+
+        <!-- 여기부터 사이드바(좌측 네비게이션) -->
+      <div class="sidebar">
+        <ul class="sidebar-logo">
+          <li><a><img src="../img/SVA_Logo.png" alt="SVA Logo" style="height:50px;"></a></li>
+        </ul>
+
+        <ul class="sidebar-icon">
+          <li><a href="user.html"><img src="../icon-white/icon_User.svg"></a></li>
+          <li><a href="main.html"><img src="../icon-white/icon_Home.svg"></a></li>
+          <li><a href="information.html"><img src="../icon-white/icon_Setting.svg"></a></li>
+        </ul>
+          
+        <ul class="sidebar-DrakMode">
+          <li><a href=""><img src="../icon-white/icon_Light.svg"></a></li>
+        </ul>
+      </div>
+
+      <!-- 여기부터 전체 컨텐츠츠-->
+      <div class="container-left">
+        <h1 class="title">ADMIN</h1>
+        <!-- STANDBY/READY 토글 -->
+        <div class="segmented-toggle large">
+            <input type="radio" name="mode" id="toggle-standby" checked>
+            <input type="radio" name="mode" id="toggle-ready">
+            <span class="slider"></span>
+            <label for="toggle-standby">STANDBY</label>
+            <label for="toggle-ready">READY</label>
+        </div>
+
+
+        <div class="admin-content">
+          <div class="admin-mode-row">
+            <div class="admin-header admin-label">MODE</div>
+            <nav class="admin-mode-nav">
+              <ul class="admin-mode">
+                <li>
+                  <div class="custom-dropdown-wrapper">
+                    <div class="admin-mode-btn custom-dropdown">
+                      <span class="selected">SVA-25PIN</span>
+                      <span class="dropdown-arrow"></span>
+                    </div>
+                    <ul class="dropdown-list">
+                      <li data-value="1">SVA-25PIN</li>
+                      <li data-value="2">SVA-64PIN</li>
+                    </ul>
+                  </div>
+                </li>    
+              </ul> 
+            </nav>  
+          </div>
+                
+            <div class="mode-card">
+                <div class="admin-card-divider"></div>
+                <div class="admin-table" id="table-content">
+                    <div class="admin-table-row">
+                      <span>MAX PWM Inten 100%</span>
+                      <div class="admin-table-controls">
+                        <button class="admin-btn minus">-</button>
+                        <span class="admin-value">4000</span>
+                        <button class="admin-btn plus">+</button>
+                      </div>
+                    </div>
+                    <div class="admin-table-row">
+                      <span>INTENSITY</span>
+                      <div class="admin-table-controls">
+                        <button class="admin-btn minus">-</button>
+                        <span class="admin-value">10</span>
+                        <button class="admin-btn plus">+</button>
+                      </div>
+                    </div>
+                    <div class="admin-table-row">
+                      <span>RF</span>
+                      <div class="admin-table-controls">
+                        <button class="admin-btn minus">-</button>
+                        <span class="admin-value">50ms</span>
+                        <button class="admin-btn plus">+</button>
+                      </div>
+                    </div>
+                    <div class="admin-table-row">
+                      <span>DEPTH</span>
+                      <div class="admin-table-controls">
+                        <button class="admin-btn minus">-</button>
+                        <span class="admin-value">0.5mm</span>
+                        <button class="admin-btn plus">+</button>
+                      </div>
+                    </div>
+      
+                  </div>
+            </div>
+        </div>
+
+
+        <!-- 여기부터 팁 제한 카드 -->
+        <div class="admin-tip-content">
+            <div class="admin-card card-bottom">
+                <div class="admin-tip-row">
+                    <div class="admin-mode-row">
+                        <span class="admin-label">Tip Max Limit</span>
+      
+                        <!-- 여기부터 ON/OFF 토글 -->
+                        <div class="admin-toggle">
+                          <input type="checkbox" id="tip-max-toggle" checked>
+                          <label for="tip-max-toggle" class="toggle-switch">
+                            <span class="toggle-on">ON</span>
+                            <span class="toggle-off">OFF</span>
+                            <span class="toggle-slider"></span>
+                          </label>
+                        </div>
+                    </div>
+                    
+    
+                    <div class="admin-card-divider"></div>
+                    <div class="admin-count-row">
+                      <span>MAX Tip Use Count</span>
+                      <input class="admin-tip-input" type="text" value="1000" readonly />
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+
+      </div>
+
+
+        <div class="container-right">
+
+            <div class="admin-time-content">
+                <div class="admin-time-row">
+                  <span class="admin-label">ROCAL TIME</span>
+                  <button class="admin-time-btn">2025 / 07 / 02</button>
+                </div>
+                <div class="admin-time-row">
+                  <span class="admin-label">ROCAL DATE</span>
+                  <button class="admin-time-btn">04 : 31</button>
+                </div>
+            </div>
+
+            <div class="admin-lang-content">
+                <div class="admin-lang-row">
+                    <div class="admin-header admin-label">LANGUGE</div>
+                    <nav class="admin-mode-nav">
+                      <ul class="admin-mode">
+                        <li>
+                          <div class="custom-dropdown-wrapper">
+                            <div class="admin-mode-btn custom-dropdown">
+                              <span class="selected">English</span>
+                              <span class="dropdown-arrow"></span>
+                            </div>
+                            <ul class="dropdown-list">
+                              <li data-value="1">English</li>
+                              <li data-value="2">Korean</li>
+                              <li data-value="3">Japanese</li>
+                            </ul>
+                          </div>
+                        </li>    
+                      </ul> 
+                    </nav>  
+                </div>
+            </div>
+
+            <!-- 여기부터 HOME/SAVE 버튼 -->
+            <div class="admin-bottom-btns">
+                <button class="admin-bottom-btn">HOME</button>
+                <button class="admin-bottom-btn">SAVE</button>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+    </div> <!-- 여기까지 wrapper -->
+
+    <script src="../js/admin.js"></script>
+
+  </body>
+</html>
+
+

@@ -1,0 +1,520 @@
+@import"common.css";
+
+body {
+    background-image: url(../img/main-Background_2.jpg);
+}
+
+svg {
+    fill: #445670;
+}
+
+.body {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 67px;
+}
+
+.sidebar {
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 0px;
+    gap: 20px;
+    justify-content: space-between;
+    border-right: 2px solid #cbdeff;
+}
+
+.sidebar-logo a {
+    font-size: 28px;
+    font-weight: bold;
+    color: #445670;
+}
+
+.sidebar-icon img {
+    padding: 10px;
+    margin: 20px;
+}
+
+.sidebar-DrakMode image {
+    padding: 10px;
+    margin: 20px;
+    margin-bottom: 40px;
+}
+
+.sound-control {
+    display: none;
+    margin-top: 10px;
+    padding: 0 10px;
+}
+  
+.sound-control input[type="range"] {
+    width: 100px;
+}
+
+/* 여기까지 사이드바(좌측 네비게이션) */
+
+
+/* 여기부터 전체 컨텐츠 */
+.container-left {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+}
+
+.admin-label {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.title {
+    font-size: 20px;
+    margin-top: 140px;
+    margin-left: 150px;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-shadow: 0px 0px 4px #66a4fd;
+    color: #fff;
+}
+
+.admin-content, .admin-tip-content {
+    background-color : rgb(51,112,237,0.6);
+    display: flex;
+    flex-direction: column;
+    border-radius: 30px;
+    margin-left: 150px;
+    width: 600px;
+}
+
+/* 여기부터 STANDBY/READY 토글 */
+
+.segmented-toggle.large {
+    position: relative;
+    /* width: 400px; */
+    height: 70px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 40px;
+    font-family: sans-serif;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    margin-left: 150px;
+    margin-bottom: 15px;
+    box-shadow: none;
+    background-color: rgb(255, 255, 255, 0.3);
+  }
+  .segmented-toggle.large input {
+    display: none;
+  }
+  .segmented-toggle.large .slider {
+    position: absolute;
+    top: 7px;
+    bottom: 7px;
+    left: 7px;
+    width: calc(50% - 14px);
+    background: #4a7aff;
+    border-radius: 33px;
+    transition: left 0.3s;
+    z-index: 1;
+  }
+  .segmented-toggle.large label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 2;
+    color: #4a7aff;
+    user-select: none;
+    transition: color 0.3s;
+    font-size: 20px;
+    padding: 5px;
+  }
+  #toggle-ready:checked ~ .slider {
+    left: calc(50% + 7px);
+  }
+  #toggle-standby:checked ~ label[for="toggle-standby"],
+  #toggle-ready:checked ~ label[for="toggle-ready"] {
+    color: #fff;
+  }
+
+
+
+
+/* 여기부터 MODE 카드 */
+
+.admin-mode-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+}
+
+
+.admin-mode {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-mode > li {
+  position: relative;
+}
+
+.admin-mode-btn {
+    height: 60px;
+    border: 2px solid #fff;
+    border-radius: 40px;
+    box-sizing: border-box;
+    box-shadow: none;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 18px;
+    padding: 0px 50px;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    background-size: 20px 20px;
+}
+
+.admin-mode-btn.custom-dropdown {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  border: 2px solid #fff;
+  border-radius: 40px;
+  box-sizing: border-box;
+  box-shadow: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 18px;
+  padding: 0px 40px;
+  cursor: pointer;
+  min-width: 200px;
+  position: relative;
+}
+
+.admin-mode-btn .selected {
+  color: #fff;
+  font-size: 18px;
+}
+
+
+
+/* 드롭다운 메뉴 스타일 */
+
+.dropdown-list {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  min-width: 200px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  border:1px solid #ddd;
+  z-index: 10;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+.admin-mode-nav > ul > li:hover .dropdown-list {
+  display: block;
+  color: #2960d6;
+}
+
+.admin-mode-nav > ul > li ul > li {
+  padding: 0 40px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background 0.2s;
+  cursor: pointer;
+  color: #2960d6;
+}
+
+.admin-mode-nav > ul > li ul > li:hover {
+  background-color: #DCE6FB;
+  color: #2960d6;
+}
+
+
+
+
+
+.admin-card-divider {
+    border-bottom: 2px solid #8bb5ff;
+    margin-left: 30px;
+    margin-right: 30px;
+  }
+
+  .admin-table {
+    display: flex;
+    flex-direction: column;
+  }
+  .admin-table-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 40px 40px 0 40px;
+    align-items: center;
+    font-size: 18px;
+    color: #fff;
+    /* font-weight: 500; */
+  }
+  .admin-table-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .admin-btn {
+    width: 38px;
+    height: 38px;
+  
+    border: none;
+    background: none;
+    color: #fff;
+    font-size: 22px;
+    /* font-weight: bold; */
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .admin-btn:hover {
+    background: none;
+    color: #fff;
+  }
+  .admin-value {
+    min-width: 60px;
+    text-align: center;
+    font-size: 18px;
+    /* font-weight: 600; */
+    color: #fff;
+    background: none;
+  }
+
+  .admin-table-row:nth-child(4) {
+    margin-bottom: 40px;
+  }
+
+
+
+
+
+  /* 여기부터 팁 제한 카드 */
+.admin-tip-content {
+    margin-top: 30px;
+}
+
+  /* 여기부터 ON/OFF 토글 */
+  input[type="checkbox"] {
+    display: none;
+}
+  .admin-toggle {
+    position: relative;
+    width: 140px;
+    height: 54px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 200px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    font-weight: bold;
+  }
+  .toggle-switch {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 200px;
+    background-color: rgb(255, 255, 255, 0.5);
+    user-select: none;
+    padding: 0 0;
+    z-index: 2;
+  }
+  .toggle-on, .toggle-off {
+    flex: 1 1 0;
+    text-align: center;
+    z-index: 2;
+    transition: color 0.3s;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a7aff;
+  }
+  .toggle-slider {
+    position: absolute;
+    top: 6px;
+    bottom: 6px;
+    width: calc(50% - 12px);
+    left: 7px;
+    background: #4a7aff;
+    border-radius: 19px;
+    transition: left 0.3s;
+    z-index: 1;
+  }
+  #tip-max-toggle:checked ~ .toggle-switch .toggle-slider {
+    left: 7px;
+  }
+  #tip-max-toggle:not(:checked) ~ .toggle-switch .toggle-slider {
+    left: calc(50% + 5px);
+  }
+#tip-max-toggle:checked ~ .toggle-switch .toggle-on {
+  color: #fff;
+}
+#tip-max-toggle:checked ~ .toggle-switch .toggle-off {
+  color: #2960d6;
+}
+#tip-max-toggle:not(:checked) ~ .toggle-switch .toggle-on {
+  color: #2960d6;
+}
+#tip-max-toggle:not(:checked) ~ .toggle-switch .toggle-off {
+  color: #fff;
+}
+  /* 여기까지지 ON/OFF 토글 */
+
+
+.admin-card {
+    /* padding: 36px 38px 32px 38px; */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-tip-row {
+    align-items: center;
+} 
+
+
+  .admin-count-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px 20px 40px;
+  }
+
+  .admin-tip-input {
+    background: none;
+    border: 2px solid #fff;
+    border-radius: 200px;
+    color: #fff;
+    font-size: 18px;
+    padding: 8px 32px;
+    width: 70px;
+    text-align: center;
+    background-color: rgb(255, 255, 255, 0.2);
+  }
+
+
+
+
+
+
+/* 여기부터 우측 컨텐츠 */
+.container-right {
+    display: flex;
+    flex-direction: column;
+    color: #fff;
+}
+
+.admin-time-content, .admin-lang-content {
+    background-color : rgb(51,112,237,0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 30px;
+    margin-left: 100px;
+    margin-top: 30px;
+    margin-right: 100px;
+}
+
+.admin-time-content {
+    margin-top: 280px;
+}
+
+
+.admin-card-header {
+    padding: 20px 40px 20px 40px;
+}
+.admin-time-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    width: 500px;
+}
+
+.admin-time-row:nth-child(1) {
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+.admin-time-row:nth-child(2) {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+  
+.admin-lang-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 0px;
+    width: 500px;
+}
+
+.admin-time-btn {
+    background: none;
+    border: 2px solid #fff;
+    border-radius: 200px;
+    color: #fff;
+    font-size: 18px;
+    padding: 8px 32px;
+    cursor: pointer;
+    width: 200px;
+    text-align: center;
+    transition: background 0.2s, color 0.2s;
+    background-color: rgb(255, 255, 255, 0.2);
+}
+
+.admin-time-btn:hover {
+    background: #fff;
+    color: #3a7cff;
+}
+
+
+/* 여기부터 HOME/SAVE 버튼 */
+.admin-bottom-btns{
+    margin-top: 220px;
+    margin-left: 310px;
+}
+
+.admin-bottom-btn {
+    border: 2px solid #fff;
+    border-radius: 200px;
+    color: #fff;
+    font-size: 18px;
+    padding: 20px 60px;
+    text-align: center;
+    background-color: rgb(255, 255, 255, 0.2);
+}
+
+.admin-bottom-btn:first-child {
+    margin-right: 20px;
+}

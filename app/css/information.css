@@ -1,0 +1,235 @@
+@import"common.css";
+
+body {
+    background-image: url(../img/main-Background_2.jpg);
+}
+
+svg {
+    fill: #445670;
+}
+
+.body {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 67px;
+}
+
+.sidebar {
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 0px;
+    gap: 20px;
+    justify-content: space-between;
+    border-right: 2px solid #cbdeff;
+}
+
+.sidebar-logo a {
+    font-size: 28px;
+    font-weight: bold;
+    color: #445670;
+}
+
+.sidebar-icon img {
+    padding: 10px;
+    margin: 20px;
+}
+
+.sidebar-DrakMode image {
+    padding: 10px;
+    margin: 20px;
+    margin-bottom: 40px;
+}
+
+.sound-control {
+    display: none;
+    margin-top: 10px;
+    padding: 0 10px;
+}
+  
+.sound-control input[type="range"] {
+    width: 100px;
+}
+
+/* 여기까지 사이드바(좌측 네비게이션) */
+
+.container-left {
+    display: flex;
+    color: #fff;
+}
+
+.infor-content {
+    background-color : rgb(51,112,237,0.6);
+    display: flex;
+    flex-direction: column;
+    border-radius: 30px;
+    margin-left: 150px;
+    width: 700px;
+}
+
+.infor-content li {
+    padding: 10px 10px;
+}
+
+.title {
+    font-size: 20px;
+    margin-top: 140px;
+    margin-left: 150px;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-shadow: 0px 0px 4px #66a4fd;
+    color: #fff;
+}
+
+.update {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90px;
+    border-radius: 100px;
+    margin: 40px;
+    cursor: pointer;
+    background-color: rgb(255, 255, 255, 0.1);
+    border: 2px solid #fff;
+    font-size: 18px;
+}
+
+.horiz {
+    display: flex;
+    justify-content: space-between;
+    padding: 35px 0;
+    margin: 0 50px;
+    font-size: 18px;
+}
+
+.border-bottom {
+    border-bottom: 2px solid #8bb5ff;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+
+/*       여기부터 언어설정      */
+
+.container {
+    background-color : rgb(51,112,237,0.6);
+    display: flex;
+    flex-direction: column;
+    border-radius: 30px;
+    padding: 20px 0;
+}
+
+/*   여기부터 키보드   */
+
+#clickArea {
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    width: 120px;
+    height: 120px;
+    background: transparent;
+    cursor: pointer;
+    z-index: 2000;
+}
+
+/* 모달 오버레이 */
+#keyboard-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#keyboard-overlay.hidden {
+    display: none;
+}
+
+/* 키보드 모달 박스 */
+.keyboard-modal {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 입력창 */
+.keyboard-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 20px;
+    margin-bottom: 16px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+/* 키 그리드 */
+.keyboard-keys {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 8px;
+}
+
+/* 공통 키 스타일 */
+.keyboard-keys button {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px 0;
+    font-size: 16px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Save 키가 2열×2행을 차지하도록 */
+.keyboard-keys button.save-key {
+    background: #6d90d1;
+    color: #fff;
+    border-color: #6d90d1;
+
+    grid-column: span 2;
+    grid-row: span 2;
+
+    /* 버튼이 셀 전체를 채우도록 */
+    justify-self: stretch;
+    align-self: stretch;
+
+    /* 12~13열, 3~4행 영역에 고정 */
+    grid-column: 12 / 14;
+    grid-row: 3 / 5;
+}
+
+/* 2칸을 차지하는 버튼 */
+.keyboard-keys button[data-key="back"],
+.keyboard-keys button[data-key="Shift"],
+.keyboard-keys button[data-key="Clear"] {
+    grid-column: span 2;
+}
+
+/* 백스페이스/ESC/Tab/Shift 같은 기능키는 살짝 색 다르게 */
+.keyboard-keys button[data-key="Clear"],
+.keyboard-keys button[data-key="back"],
+.keyboard-keys button[data-key="Esc"],
+.keyboard-keys button[data-key="Tab"],
+.keyboard-keys button[data-key="Shift"] {
+    background: #e0e0e0;
+}
+
+/* Shift 버튼이 active 상태일 때 */
+.keyboard-keys button[data-key="Shift"].active {
+    background-color: #758fcc;
+    color: #fff;
+}
+
+/* 여기까지 키보드 */

@@ -1,0 +1,663 @@
+@import"common.css";
+
+/* 여기부터터 사이드바 (좌측 네비게이션) */
+
+.sidebar {
+    width: 280px;
+    background: linear-gradient(#458bfd, #46c5e8);
+    display: flex;
+    flex-direction: column;
+    margin: 40px;
+    border-radius: 40px;
+}
+
+
+.body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+}
+
+
+.sidebar-logo h1 {
+    display: flex;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* 보더바텀 속성 */
+.sidebar-logo {
+    display: flex;
+    justify-content: center;
+    border-bottom: 2px solid #c1d9ff;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    width: 230px;
+    margin: 0 auto;
+}
+
+
+
+.sidebar-icon li {
+    display: flex;
+    align-items: center;
+    margin: 15px 30px;
+    padding: 10px 20px;
+}
+
+.sidebar-icon li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+}
+
+.sidebar-icon img {
+    padding: 10px 30px 10px 0px;
+}
+
+
+
+
+/* 여기부터 유저 아이콘 배지 */
+
+.sidebar-icon .user-link {
+  position: relative;      /* 배지를 이 요소 기준으로 절대 위치시키기 위해 */
+  /* display: inline-block;  
+  text-decoration: none;
+  color: inherit; */
+}
+
+.sidebar-icon .user-link .badge {
+  position: absolute;
+  top: 5px;    
+  right: 50px;  
+  width: 20px;
+  height: 20px;
+  background-color: #e74c3c;  /* 빨간색 */
+  border-radius: 50%;          /* 동그라미 */
+  text-align: center;
+  line-height: 18px;
+  font-size: 14px;
+}
+
+
+
+/* 보더탑 속성 */
+.sidebar-Setting {
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid #c1d9ff;
+    width: 230px;
+    margin: 0 auto;
+}
+
+
+.sidebar-Setting li {
+    display: flex;
+    margin: 0 10px;
+    padding: 10px 20px;
+}
+
+.sidebar-Setting li:first-child {
+    margin-top: 15px;
+}
+
+
+.sidebar-Setting li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+}
+
+.sidebar-Setting img {
+    padding: 10px 30px 10px 0px;
+}
+
+/* 여기까지 사이드바 (좌측 네비게이션) */
+
+
+
+
+
+
+
+
+
+/*     여기부터 핸드피스 영역     */
+
+.handpiece-img {
+  width: 880px;
+  height: 1000px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 40px;
+}
+
+.handpiece-img canvas {
+  width: 100% !important;
+  height: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  outline: none;
+}
+
+.handpiece {
+  width: 100%;
+  height: 100%;
+  background-color: #e8f0f3;
+  border-radius: 40px;
+  position: relative;
+}
+
+.handpiece-value {
+    display: flex;
+    width: 240px;
+    height: 300px;
+    border-radius: 40px;
+    background-color: #fff;
+    margin-top: 60px;
+    margin-left: 60px;
+    position: relative;
+    pointer-events: auto;
+    z-index: 999;
+}
+
+
+.tipType {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.tipType-img {
+    width: 80px;
+    height: 80px;
+    background-image: url(../img/tipType-64.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 20px;
+    margin-right: 15px;
+}
+
+
+.tipType-value p {
+    font-size: 12px;
+    color: #aab4c1;
+    margin-bottom: 10px;
+}
+
+.tipType-value h3 {
+    font-size: 22px;
+    color: #4180ff;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+.sohtCount {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+
+
+.handpiece .border-bottom {
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    border-bottom: 2px solid #ebebeb;
+    padding-top: 35px;
+    margin-left: 22px;
+}
+
+
+
+.sohtCount-value {
+    margin-top: 25px;
+}
+
+
+.sohtCount-value p {
+    font-size: 12px;
+    color: #aab4c1;
+    margin-bottom: 10px;
+}
+
+.sohtCount-value h3 {
+    font-size: 22px;
+    color: #4180ff;
+    font-weight: bold;
+}
+
+.sohtCount-value span {
+    font-size: 12px;
+    color: #aab4c1;
+    font-weight: normal;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 여기부터 원형 프로그레스바 */
+
+:root {
+    --blue: #468afd;
+}
+
+.circle_wrap {
+    display: flex;
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.circle {
+    cursor: pointer;
+    margin: 1rem;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.pie {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+svg {
+    width: 80px;
+    height: 80px;
+}
+
+circle {
+    fill: none;
+    stroke: rgb(216, 227, 232); /* 배경 원 */
+    stroke-width: 10;
+}
+
+circle:nth-child(2) {
+    stroke: var(--blue);
+    stroke-dasharray: 220px; /* 원 둘레 */
+    stroke-dashoffset: 180px; /* 초기에는 완전히 감춘 상태 */
+    stroke-linecap: round;
+}
+
+.circle_2.on circle:nth-child(2) {
+    stroke-dashoffset: calc(220px * 0.65); /* 35%만큼 채움 */
+}
+
+/* 여기까지 원형 프로그레스바 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 여기부터 우측 설정값 */
+.motor {
+    display: flex;
+    flex-direction: column;
+    margin-right: 0;
+    /* margin-top: 68px;
+    margin-bottom:67px; */
+}
+
+.motor-set-point {
+    width: 600px;
+    height: 1000px;
+    /* margin: 40px; */
+    background: linear-gradient(#458bfd, #46c5e8);
+    border-radius: 40px;
+}
+
+
+
+.motor-Horiz {
+    display: flex;
+    padding: 0px 60px;
+    align-items:center;
+}
+
+.motor-title-Horiz {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    padding: 36px 60px;
+}
+
+.motor-title-Horiz h1 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-right: auto;
+}
+
+
+
+.table {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 650px;
+    margin: 36px 0px;
+}
+
+
+.row {
+    display: flex;
+    align-items: center;
+    /* background: #ffffff; */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.row span:first-child {
+    /* flex: 1; */
+    text-align: left;
+    margin-left: 60px;
+    font-size: 18px;
+    width: 180px;
+    color: #fff;
+}
+
+.row span.value {
+    flex: 0 1 100px; /* 값 칸의 크기를 일정하게 유지 */
+    text-align: center;
+    color: #fff;
+}
+
+.row button.decrease {
+    flex: 0 0 40px;
+    text-align: center;
+}
+
+.row button.increase {
+    flex: 0 0 40px;
+    text-align: center;
+}
+
+.row button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px 10px;
+    margin-right: 60px;
+    color: #ffffff;
+}
+
+.value-container button {
+    margin-right: 20px;
+}
+
+/* TIP TYPE의 경우만 중앙 정렬 */
+.tip-type-container {
+    justify-content: flex-start !important;
+    padding-left: 50px; /* decrease 버튼과 같은 위치에 맞추기 */
+}
+
+.row .value-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start; /* 버튼들이 왼쪽부터 배치되도록 */
+    margin-right: 60px;
+}
+
+.row button.decrease, .row button.increase {
+    font-size: 24px; /* 버튼 크기 증가 */
+    padding: 10px 15px; /* 내부 패딩 증가 */
+    width: 50px; /* 버튼 크기 고정 */
+    height: 50px;
+}
+
+.value {
+    font-size: 20px !important; /* 강제 적용 */
+    min-width: 120px;
+    text-align: center;
+}
+
+
+
+.nav-btn {
+    position: relative;
+    font-size: 0; /* 기존 텍스트 숨김 */
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border: 2px solid #007bff;
+    border-radius: 100px;
+    cursor: pointer;
+}
+
+.nav-btn::after {
+    content: ''; /* 텍스트 대신 화살표 표시 */
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid #007bff;
+    border-right: 2px solid #007bff;
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#prevBtn::after {
+    transform: translate(-10%, -50%) rotate(-135deg);
+}
+
+
+
+.border-bottom {
+    border-bottom: 2px solid #c1d9ff;
+    width: 510px;
+    margin-left: 45px;
+}
+
+
+
+
+/*   READY 버튼   */
+
+
+.but-Horiz {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+}
+
+.storage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    height: 110px;
+    padding: 5px 40px;
+    margin: 20px 10px 0px 10px;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 100px;
+    background-color: rgb(255, 255, 255, 0.1);
+}
+
+.storage a {
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 400;
+    color: #fff;
+}
+
+.storage svg {
+    width: 40px;
+    height: 40px;
+}
+
+.storage svg path {
+    stroke-width: 3; /* 테두리 두께 조정 */
+}
+
+
+
+.sendBtn {
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    width: 360px;
+    height: 110px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 20px;
+    display: block;
+    text-align: center;
+    line-height: 110px;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 100px;
+    background-color: rgb(255, 255, 255, 0.1);
+}
+
+
+
+
+
+
+/* 1) 볼륨 슬라이더 기본 가로 모드 */
+.volume-slider {
+  -webkit-appearance: none; /* Chrome, Edge */
+  appearance: none;         /* Firefox */
+  width: 100px;             /* 슬라이더 길이 */
+  height: 8px;              /* 슬라이더 두께 */
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+  margin: 8px auto;
+  cursor: pointer;
+}
+
+/* 2) 트랙(track) 스타일 */
+.volume-slider::-webkit-slider-runnable-track {
+  width: 8px;
+  height: 100%;
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
+.volume-slider::-moz-range-track {
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+}
+
+/* 3) thumb(동그라미) 스타일 */
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #fff;    /* 눈에 띄는 파란색 */
+  border: none;
+  border-radius: 50%;
+  margin-top: -6px;       /* 트랙 두께 반만큼 위로 올리기 */
+}
+.volume-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #6d90d1;
+  border: none;
+  border-radius: 50%;
+}
+
+/* 4) focus/hover 효과 (선택) */
+.volume-slider:focus {
+  outline: none;
+}
+.volume-slider:hover::-webkit-slider-runnable-track {
+  background: rgba(255,255,255,0.5);
+}
+
+
+
+/* 볼륨 조절 슬라이더 숨기기 */
+.hidden {
+  display: none !important;
+}
+
+#model-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#model-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* STIX Two Text 폰트 적용 (SENSOVIA 로고 전용) */
+.stix-logo {
+  font-family: 'STIX Two Text', serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.03em;
+}
+

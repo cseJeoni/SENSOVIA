@@ -1,0 +1,476 @@
+@import"common.css";
+
+/* 여기부터 사이드바 (좌측 네비게이션) */
+
+.sidebar {
+  width: 120px;
+  background: linear-gradient(#458bfd, #46c5e8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40px;
+  border-radius: 30px;
+}
+
+.body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+}
+
+.sidebar-logo h1 {
+    display: flex;
+    align-items: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* 보더바텀 속성 */
+.sidebar-logo {
+  display: flex;
+  justify-content: center;
+  /* border-bottom: 2px solid #c1d9ff; */
+  padding-top: 50px;
+  padding-bottom: 50px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.sidebar-icon li {
+  display: flex;
+  align-items: center;
+  margin: 15px 20px;
+  padding: 10px 20px;
+}
+
+.sidebar-icon li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}
+
+.sidebar-icon img {
+  padding: 10px 0px 10px 0px;
+}
+
+/* 보더탑 속성 */
+.sidebar-DrakMode {
+  display: flex;
+  flex-direction: column;
+  /* border-top: 2px solid #c1d9ff; */
+  width: 80%;
+  /* margin: 0 auto; */
+}
+
+.sidebar-DrakMode li {
+  display: flex;
+  margin: 25px 10px;
+  padding: 10px 20px;
+}
+
+.sidebar-DrakMode li:first-child {
+  margin-top: 15px;
+}
+
+.sidebar-DrakMode li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+}
+
+.sidebar-DrakMode img {
+  padding: 30px 30px 20px 0px;
+}
+
+/* 여기까지 사이드바 (좌측 네비게이션) */
+
+/* 여기부터 키보드~~~~~~ */
+
+/* 모달 오버레이 */
+#keyboard-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+#keyboard-overlay.hidden {
+  display: none;
+}
+
+/* 키보드 모달 박스 */
+.keyboard-modal {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 800px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 입력창 */
+.keyboard-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 20px;
+  margin-bottom: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+/* 키 그리드 */
+.keyboard-keys {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 8px;
+}
+
+/* 공통 키 스타일 */
+.keyboard-keys button {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px 0;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Save 키가 2열×2행을 차지하도록 */
+.keyboard-keys button.save-key {
+  background: #6d90d1;
+  color: #fff;
+  border-color: #6d90d1;
+
+  grid-column: span 2;
+  grid-row: span 2;
+
+  /* 버튼이 셀 전체를 채우도록 */
+  justify-self: stretch;
+  align-self: stretch;
+
+  /* 12~13열, 3~4행 영역에 고정 */
+  grid-column: 12 / 14;
+  grid-row:    3 /  5;
+}
+
+/* 2칸을 차지하는 버튼 */
+.keyboard-keys button[data-key="back"],
+.keyboard-keys button[data-key="Shift"],
+.keyboard-keys button[data-key="Clear"] {
+  grid-column: span 2;
+}
+
+/* 백스페이스/ESC/Tab/Shift 같은 기능키는 살짝 색 다르게 */
+.keyboard-keys button[data-key="Clear"],
+.keyboard-keys button[data-key="back"],
+.keyboard-keys button[data-key="Esc"],
+.keyboard-keys button[data-key="Tab"],
+.keyboard-keys button[data-key="Shift"] {
+  background: #e0e0e0;
+}
+
+/* Shift 버튼이 active 상태일 때 */
+.keyboard-keys button[data-key="Shift"].active {
+  background-color: #758fcc;
+  color: #fff;
+}
+
+/* 여기까지 키보드 */
+
+/*     여기부터 스토리지 테이블 영역     */
+
+.storage-container {
+    width: 1040px;
+    height: 1000px;
+    background-color: #ffffff;
+    border-radius: 40px;
+    margin-right: 40px;
+}
+
+/* 헤더 */
+.storage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.storage-header h2 {
+  color: #66788a;
+  font-size: 30px;
+  font-weight: bold;
+  margin: 45px 40px 40px;
+}
+.actions .btn {
+  padding: 16px 28px;
+  border: none;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.btn.new {
+  background-color: #6d90d1;
+  color: #fff;
+  margin-right: 10px;
+}
+.btn.delete {
+  background-color: #e26f48;
+  color: #fff;
+}
+
+/* 테이블 공통 */
+.storage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.storage-table thead {
+  background-color: #6d90d1;
+  /* border-radius: 20px; */
+}
+.storage-table th,
+.storage-table td {
+  padding: 30px 20px;
+  text-align: left;
+  color: #fff;
+}
+.storage-table th {
+  font-weight: normal;
+  font-size: 20px;
+}
+.storage-table td {
+  color: #66788a;
+  font-size: 16px;
+  border-bottom: 1px solid #e4e9f1;
+}
+
+/* 체크박스 셀 색 조정 */
+.storage-table th:first-child,
+.storage-table td:first-child {
+  width: 50px;
+  text-align: center;
+}
+
+/* 1) 기본 체크박스 숨기기 */
+.storage-table input[type="checkbox"] {
+  appearance: none;        /* Firefox, Safari */
+  -webkit-appearance: none;/* Chrome, Edge, iOS */
+  width: 20px;
+  height: 20px;
+  border: 2px solid #6d90d1;
+  border-radius: 4px;      /* 모서리 둥글게 */
+  position: relative;
+  cursor: pointer;
+  margin: 0;               /* 표 안 여백 조정용 */
+}
+
+/* 2) 체크되었을 때 내부 색상으로 가득 채우기 */
+.storage-table input[type="checkbox"]:checked {
+  background-color: #6d90d1;
+  border-color: #6d90d1;
+}
+
+/* 3) 호버/포커스 효과 (선택 사항) */
+.storage-table input[type="checkbox"]:hover {
+  border-color: #517fc1;
+}
+.storage-table input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(109,144,209,0.4);
+}
+
+/* 선택된 행 */
+.storage-table tr.selected {
+  background-color: #ebf1fc;
+}
+.storage-table tr.selected td {
+  color: #66788a;
+}
+
+/* 호버 효과 */
+.storage-table tbody tr:hover {
+  background-color: #f5f8fe;
+}
+
+/* 여기까지 스토리지 테이블 영역 */
+
+/* 여기부터 우측 설정값 */
+.motor {
+    display: flex;
+    flex-direction: column;
+    margin-right: 0;
+    margin-top: 40px;
+    /* margin-bottom:67px; */
+}
+
+.motor-set-point {
+    width: 600px;
+    height: 1000px;
+    /* margin: 40px; */
+    background: linear-gradient(#458bfd, #46c5e8);
+    border-radius: 40px;
+}
+
+.motor-Horiz {
+    display: flex;
+    padding: 0px 60px;
+    align-items:center;
+}
+
+.motor-title-Horiz {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+    padding: 36px 60px;
+}
+
+.motor-title-Horiz h1 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-right: auto;
+}
+
+.table {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 650px;
+    margin: 36px 0px;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* background: #ffffff; */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.row span:first-child {
+    /* flex: 1; */
+    text-align: left;
+    margin-left: 60px;
+    font-size: 18px;
+    width: 180px;
+    color: #fff;
+}
+
+.row span.value {
+    flex: 0 1 100px; /* 값 칸의 크기를 일정하게 유지 */
+    text-align: center;
+    color: #fff;
+}
+
+.row button.decrease {
+    flex: 0 0 40px;
+    text-align: center;
+}
+
+.row button.increase {
+    flex: 0 0 40px;
+    text-align: center;
+}
+
+.row button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px 10px;
+    margin-right: 45px;
+    color: #ffffff;
+}
+
+.row .value-container {
+    display: flex;
+    align-items: center;
+    width: 200px;
+    gap: 10px;
+}
+
+.row button.decrease, .row button.increase {
+    font-size: 24px; /* 버튼 크기 증가 */
+    padding: 10px 15px; /* 내부 패딩 증가 */
+    width: 50px; /* 버튼 크기 고정 */
+    height: 50px;
+}
+
+.value {
+    font-size: 20px !important; /* 강제 적용 */
+    min-width: 120px;
+    text-align: center;
+}
+
+.nav-btn {
+    position: relative;
+    font-size: 0; /* 기존 텍스트 숨김 */
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border: 2px solid #007bff;
+    border-radius: 100px;
+    cursor: pointer;
+}
+
+.nav-btn::after {
+    content: ''; /* 텍스트 대신 화살표 표시 */
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-top: 2px solid #007bff;
+    border-right: 2px solid #007bff;
+    top: 50%;
+    left: 45%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#prevBtn::after {
+    transform: translate(-10%, -50%) rotate(-135deg);
+}
+
+.border-bottom {
+    border-bottom: 2px solid #c1d9ff;
+    width: 510px;
+    margin-left: 45px;
+}
+
+/*   READY 버튼   */
+.but-Horiz {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 50px;
+}
+
+.sendBtn {
+    border: none;
+    cursor: pointer;
+    height: 110px;
+    font-size: 18px;
+    font-weight: 400;
+    padding: 5px 40px;
+    margin: 20px 10px 0px 10px;
+    border: 2px solid #ffffff;
+    border-radius: 100px;
+    color: #fff;
+    background-color: rgb(255, 255, 255, 0.1);
+}
+
+.sendBtn a {
+    color: #fff;
+    text-decoration: none;
+}

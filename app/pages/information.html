@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Layout</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/information.css">
+  </head>
+  <body>
+
+
+    <div class="wrapper">
+
+
+      <!-- 여기부터 사이드바(좌측 네비게이션) -->
+
+      <div class="sidebar">
+        <ul class="sidebar-logo">
+          <li><a><img src="../img/SVA_Logo.png" alt="SVA Logo" style="height:50px;"></a></li>
+        </ul>
+
+        <ul class="sidebar-icon">
+          <li><a href="user.html"><img src="../icon-white/icon_User.svg"></a></li>
+          <li><a href="main.html"><img src="../icon-white/icon_Home.svg"></a></li>
+          <li><a href="information.html"><img src="../icon-white/icon_Setting.svg"></a></li>
+        </ul>
+          
+        <ul class="sidebar-DrakMode">
+          <li><a href=""><img src="../icon-white/icon_Light.svg"></a></li>
+        </ul>
+      </div>
+
+
+
+      <div class="container-left">
+
+        <div>
+          <h1 class="title">INFORMATION</h1>
+            <div class="infor-content">
+              <ui class="horiz">
+                <li>GUI Version</li>
+                <li>1.0.05</li>
+              </ui>
+              <div class="border-bottom"></div>
+              <ui class="horiz">
+                <li>FW Version</li>
+                <li>1.0.05</li>
+              </ui>
+              <div class="border-bottom"></div>
+              <ui class="horiz">
+                <li>Product S/N</li>
+                <li>000012</li>
+              </ui>
+              <div class="border-bottom"></div>
+              <ui class="horiz">
+                <li>Operating Time</li>
+                <li><p id="operatingTime">00:00:00</p></li>
+              </ui>
+              <div class="border-bottom"></div>
+              <ui class="horiz">
+                <li>Local Time</li>
+                <li><p id="clock">00:00:00</p></li>
+              </ui>
+            </div>
+            
+        </div>
+      </div>
+
+        <!-- (2) 클릭용 투명 박스 -->
+        <div id="clickArea"></div>
+
+        <!-- + New 버튼 바로 아래에 추가 -->
+            <div id="keyboard-overlay" class="keyboard-overlay hidden">
+                <div class="keyboard-modal">
+                <input id="keyboard-input" 
+                        type="text" 
+                        placeholder="Admin Password" 
+                        class="keyboard-input" 
+                        readonly />
+
+                <div class="keyboard-keys">
+                <!-- Row 1 -->
+                <button data-key="Esc">ESC</button>
+                <button data-key="1">1</button>
+                <button data-key="2">2</button>
+                <button data-key="3">3</button>
+                <button data-key="4">4</button>
+                <button data-key="5">5</button>
+                <button data-key="6">6</button>
+                <button data-key="7">7</button>
+                <button data-key="8">8</button>
+                <button data-key="9">9</button>
+                <button data-key="0">0</button>
+                <button data-key="back">←</button>
+                
+              
+                <!-- Row 2 -->
+                <button data-key="~">~</button>
+                <button data-key="q">q</button>
+                <button data-key="w">w</button>
+                <button data-key="e">e</button>
+                <button data-key="r">r</button>
+                <button data-key="t">t</button>
+                <button data-key="y">y</button>
+                <button data-key="u">u</button>
+                <button data-key="i">i</button>
+                <button data-key="o">o</button>
+                <button data-key="p">p</button>
+                <button data-key="Clear">Clear</button>
+                
+
+                <!-- Row 3 -->
+                <button data-key="#">#</button>
+                <button data-key="a">a</button>
+                <button data-key="s">s</button>
+                <button data-key="d">d</button>
+                <button data-key="f">f</button>
+                <button data-key="g">g</button>
+                <button data-key="h">h</button>
+                <button data-key="j">j</button>
+                <button data-key="k">k</button>
+                <button data-key="l">l</button>
+                <button data-key="-">-</button>
+
+
+                <!-- Row 4 -->
+                <button data-key="Shift">Shift</button>
+                <button data-key="z">z</button>
+                <button data-key="x">x</button>
+                <button data-key="c">c</button>
+                <button data-key="v">v</button>
+                <button data-key="b">b</button>
+                <button data-key="n">n</button>
+                <button data-key="m">m</button>
+                <button data-key=".">.</button>
+                <button data-key="@">@</button>
+                <button class="save-key" data-key="Save">Enter</button>
+                
+                </div>
+
+                </div>
+            </div>
+
+
+
+    </div> <!-- 여기까지 wrapper -->
+
+
+    <script src="../js/information.js"></script>
+    <script src="../js/main.js"></script>
+
+  </body>
+</html>
+
+

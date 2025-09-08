@@ -1,0 +1,60 @@
+/* 리셋 CSS */
+@import "reset.css";
+
+/* 폰트 설정 */
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('../resorces/fonts/NotoSans-VariableFont_wdth\,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+}
+
+/* 공통 레이아웃 */
+.wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 공통 버튼 스타일 */
+.nav-btn {
+    position: relative;
+    font-size: 0;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.nav-btn::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#prevBtn::after {
+    transform: translate(-10%, -50%) rotate(-135deg);
+}
+
+/* 공통 애니메이션 */
+@keyframes waveUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* 공통 스타일 끝 */ 

@@ -1,0 +1,143 @@
+@import "common.css";
+
+@keyframes waveUp {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+body {
+    background: url(../img/main-Background_2.jpg) no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+}
+
+/*
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url(../img/wave-pattern.svg);
+    background-size: 100% auto;
+    opacity: 0.3;
+    animation: waveUp 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+*/
+
+svg {
+    fill: #445670;
+}
+
+.wrapper {
+    display: flex;
+    height: 100vh; /* 뷰포트 높이를 기준으로 */
+    overflow: hidden; /* 스크롤 제거 */
+}
+
+.sidebar {
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 0px;
+    gap: 20px;
+
+    justify-content: space-between;
+    border-right: 2px solid #cbdeff;
+}
+
+
+.body {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 67px;
+}
+
+
+.sidebar-logo a {
+    font-size: 28px;
+    font-weight: bold;
+    color: #445670;
+}
+
+.sidebar-icon img {
+    padding: 10px;
+    margin: 20px;
+}
+.sidebar-DrakMode image {
+    padding: 10px;
+    margin: 20px;
+    margin-bottom: 40px;
+}
+
+
+
+.mene {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    margin-left: 205px;
+}
+
+
+.auto, .manual {
+    display: flex;
+    align-items: center;
+    width: 284px;
+    height: 100px;
+    border: 2px solid #fff;
+    border-radius: 100px;
+    background-color: rgb(255, 255, 255, 0.1);
+}
+
+
+
+.mene h1 {
+    font-size: 20px;
+    color: #fff;
+    font-weight: bold;
+    padding-left: 55px;
+    width: 140px;
+}
+
+
+
+
+/* 여기부터 화살표 */
+.nav-btn {
+    position: relative;
+    font-size: 0; /* 기존 텍스트 숨김 */
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.nav-btn::after {
+    content: ''; /* 텍스트 대신 화살표 표시 */
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-top: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
+    top: 50%;
+    left: 40%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+#prevBtn::after {
+    transform: translate(-10%, -50%) rotate(-135deg);
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Layout</title>
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/user.css">
+  </head>
+  <body>
+
+
+    <div class="wrapper">
+
+
+      <!-- 여기부터 사이드바(좌측 네비게이션) -->
+
+
+      <div class="sidebar">
+        <ul class="sidebar-logo">
+          <li><a><img src="../img/SVA_Logo_white.png" alt="SVA Logo" style="height:40px;"></a></li>
+        </ul>
+
+        <ul class="sidebar-icon">
+          <li><a href="user.html"><img src="../icon-white/icon_User.svg"></a></li>
+          <li><a href="main.html"><img src="../icon-white/icon_Home.svg"></a></li>
+          <li><a href="information.html"><img src="../icon-white/icon_Setting.svg"></a></li>
+        </ul>
+          
+        <ul class="sidebar-DrakMode">
+          <li><a href=""><img src="../icon-white/icon_Light.svg"></a></li>
+        </ul>
+      </div>
+
+  <!-- 여기부터 스토리지 테이블 영역 -->
+      <div class="body">
+
+        <div class="storage-container">
+            <div class="storage-header">
+              <h2>USER</h2>
+              
+              <!-- 검색박스 추가 -->
+              <div class="search-container">
+                <input type="text"
+                      class="search-input"
+                      placeholder="search" />
+                <button class="search-btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 38 38" fill="none">
+                  <circle cx="18" cy="18" r="9" stroke="currentColor" stroke-width="2"/>
+                  <path d="M29 30L24 25" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+
+              </div>
+
+              <div class="actions">
+                  <button id="refreshBtn" class="btn refresh" title="Refresh">⟲ Refresh</button>
+                  <button id="newBtn" class="btn new">+ New</button>
+
+                    <!-- + New 버튼 바로 아래에 추가 -->
+                  <div id="keyboard-overlay" class="keyboard-overlay hidden">
+                      <div class="keyboard-modal">
+                          <!-- 검색용 입력창 -->
+                          <input id="keyboard-input" 
+                                 type="text" 
+                                 placeholder="Enter search text" 
+                                 class="keyboard-input search-mode hidden" 
+                                 readonly />
+
+                          <!-- 새 사용자 입력 폼 -->
+                          <div class="new-user-form new-mode hidden">
+                              <h2>Add Patient Information</h2>
+                              <div class="form-row">
+                                  <label for="name">Name:</label>
+                                  <input type="text" id="name" readonly>
+                              </div>
+                              <div class="form-row">
+                                  <label for="rrn">RRN:</label>
+                                  <input type="text" id="rrn" readonly>
+                              </div>
+                              <div class="form-row">
+                                  <label for="gender">Gender:</label>
+                                  <select id="gender">
+                                      <option value="Female">Female</option>
+                                      <option value="male">male</option>
+                                  </select>
+                              </div>
+                              <div class="form-row">
+                                  <label for="prev-date">Last Procedure Date:</label>
+                                  <div class="date-picker">
+                                      <input type="text" id="prev-date" readonly>
+                                  </div>
+                              </div>
+                              <div class="form-row">
+                                  <label for="tip-type">Tip Type:</label>
+                                  <select id="tip-type">
+                                      <option value="25Pin">25Pin</option>
+                                      <option value="49Pin">64Pin</option>
+                                  </select>
+                              </div>
+                              <div class="form-row">
+                                  <label for="shot-count">Shot Count:</label>
+                                  <input type="text" id="shot-count" readonly>
+                              </div>
+                              <div class="form-row">
+                                  <label for="mfg-date">MFG Date:</label>
+                                  <div class="date-picker">
+                                      <input type="text" id="mfg-date" readonly>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <!-- 키보드 -->
+                          <div class="keyboard-keys">
+                              <!-- 키보드 키들은 JavaScript로 동적 생성 -->
+                          </div>
+                      </div>
+                  </div>
+
+
+
+
+                  <button id="deleteBtn" class="btn delete" disabled>Delete</button>
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="storage-table">
+                    <thead>
+                        <tr>
+                        <th><input type="checkbox" id="selectAll" /></th>
+                        <th>Name</th>
+                        <th>RRN</th>
+                        <th>Gender</th>
+                        <th>Previous Procedure Date</th>
+                        <th>Tip Type</th>
+                        <th>Shot Count</th>
+                        <th>MFG Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        <td><input type="checkbox" class="row-checkbox" /></td>
+                        <td>SaveFile_001</td>
+                        <td>920427-*******</td>
+                        <td>Female</td>
+                        <td>2025-04-10</td>
+                        <td>25Pin</td>
+                        <td>920/2000</td>
+                        <td>2025-02-05</td>
+                        </tr>
+                        <tr>
+                        <td><input type="checkbox" class="row-checkbox" /></td>
+                        <td>SaveFile_002</td>
+                        <td>870427-*******</td>
+                        <td>Female</td>
+                        <td>2025-04-10</td>
+                        <td>25Pin</td>
+                        <td>567/2000</td>
+                        <td>2025-02-11</td>
+                        </tr>
+                        <tr>
+                        <td><input type="checkbox" class="row-checkbox" /></td>
+                        <td>SaveFile_003</td>
+                        <td>000427-*******</td>
+                        <td>Female</td>
+                        <td>2025-04-10</td>
+                        <td>64Pin</td>
+                        <td>1980/2000</td>
+                        <td>2025-03-17</td>
+                        </tr>
+                        <tr>
+                        <td><input type="checkbox" class="row-checkbox" /></td>
+                        <td>SaveFile_004</td>
+                        <td>780427-*******</td>
+                        <td>Female</td>
+                        <td>2025-04-10</td>
+                        <td>25Pin</td>
+                        <td>1322/2000</td>
+                        <td>2025-05-10</td>
+                        </tr>
+                        <tr>
+                        <td><input type="checkbox" class="row-checkbox" /></td>
+                        <td>SaveFile_005</td>
+                        <td>940427-*******</td>
+                        <td>Female</td>
+                        <td>2025-04-10</td>
+                        <td>64Pin</td>
+                        <td>167/2000</td>
+                        <td>2025-05-15</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+      </div>
+      <!-- 여기까지 스토리지 테이블 영역 -->
+
+
+
+
+
+
+
+    </div> <!-- 여기까지 wrapper -->
+
+    <script src="../js/user.js"></script>
+  </body>
+</html>
+
+

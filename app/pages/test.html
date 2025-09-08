@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Segmented Toggle</title>
+  <style>
+    body {
+      background: #888;
+      display: flex;
+      height: 100vh;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    .segmented-toggle {
+      position: relative;
+      width: 370px;    /* 전체 너비 (좌우 5px씩 여백 반영) */
+      height: 80px;    /* 전체 높이 (상하 5px씩 여백 반영) */
+      background: transparent;
+      border: 2px solid #fff;
+      border-radius: 40px;  /* 반 높이만큼 둥글게 */
+      font-family: sans-serif;
+      box-sizing: border-box;
+      /* flex로 레이블 정렬 (선택 사항) */
+      display: flex;
+    }
+
+    /* 숨길 라디오 */
+    .segmented-toggle input {
+      display: none;
+    }
+
+    /* 슬라이더: top/bottom을 지정해서 세로로 중간 정렬 */
+    .segmented-toggle .slider {
+      position: absolute;
+      top: 7px;    /* 상단 여백 */
+      bottom: 7px; /* 하단 여백 */
+      left: 7px;   /* 좌측 여백 */
+      width: calc(50% - 14px); /* 좌우 여백 반영 */
+      background: #4a7aff;
+      border-radius: 33px;
+      transition: left 0.3s;
+      z-index: 1;
+    }
+
+    /* 레이블(버튼) */
+    .segmented-toggle label {
+      flex: 1;                  /* 50%씩 차지 */
+      display: flex;
+      align-items: center;      /* 수직 중앙 정렬 */
+      justify-content: center;  /* 수평 중앙 정렬 */
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 2;
+      color: #4a7aff;           /* 기본 파란색 텍스트 */
+      user-select: none;
+      transition: color 0.3s;
+      padding: 5px; /* 상하좌우 5px 여백 추가 */
+    }
+
+    /* READY 선택 시 슬라이더 이동 */
+    #toggle-ready:checked ~ .slider {
+      left: calc(50% + 7px);
+    }
+    /* 선택된 쪽 텍스트 흰색 처리 */
+    #toggle-standby:checked ~ label[for="toggle-standby"],
+    #toggle-ready:checked    ~ label[for="toggle-ready"] {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="segmented-toggle">
+    <input type="radio" name="mode" id="toggle-standby" checked>
+    <input type="radio" name="mode" id="toggle-ready">
+    <span class="slider"></span>
+    <label for="toggle-standby">STANDBY</label>
+    <label for="toggle-ready">READY</label>
+  </div>
+</body>
+</html>
