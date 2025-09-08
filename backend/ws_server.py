@@ -234,13 +234,7 @@ async def push_motor_status():
         motor_connected = motor.is_connected()
         if not motor_connected and (motor_reconnect_task is None or motor_reconnect_task.done()):
             motor_reconnect_task = asyncio.create_task(check_and_reconnect_motor())
-        
-        resistance_data = {'resistance1': None, 'resistance2': None, 'status1': 'N/A', 'status2': 'N/A'}
-        if resistance_available:
-            try:
-                resistance_data = await get_resistance_values()
-            except Exception as e:
-                print(f"[RESISTANCE] 읽기 오류: {e}")
+
         
         data = {}
         # GPIO 상태 읽기
@@ -261,7 +255,6 @@ async def push_motor_status():
                     "gpio18": gpio18_state, "gpio23": gpio23_state,
                     "needle_tip_connected": needle_tip_connected,
                     "motor_connected": True,
-                    **resistance_data # 저항 데이터 통합
                 }
             }
         else:
@@ -271,7 +264,7 @@ async def push_motor_status():
                     "motor_connected": False,
                     "gpio18": gpio18_state, "gpio23": gpio23_state,
                     "needle_tip_connected": needle_tip_connected,
-                    **resistance_data # 저항 데이터 통합
+
                 }
             }
 
@@ -288,12 +281,6 @@ async def main():
         await push_motor_status()
 
 def cleanup_gpio():
-    if resistance_available:
-        try:
-            close_resistance_monitor()
-            print("[INFO] 저항 모니터 정리 완료")
-        except Exception as e: print(f"[ERROR] 저항 모니터 정리 중 오류: {e}")
-    
     # --- [수정] gpiozero 객체 정리 ---
     if gpio_available:
         try:
