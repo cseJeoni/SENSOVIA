@@ -24,6 +24,7 @@ class WebSocketClient {
         } else {
             console.warn('[WebSocket Client] Electron API 없음 - 개발 모드에서는 기존 WebSocket 사용');
             // 개발 모드에서는 기존 websocket-manager 사용
+            this.fallbackToDirectWebSocket();
             return;
         }
     }
@@ -100,8 +101,18 @@ class WebSocketClient {
                 console.error('[WebSocket Client] 명령 전송 오류:', error);
                 return false;
             }
+        } else if (this.directWs && this.directWs.readyState === WebSocket.OPEN) {
+            // 직접 WebSocket 연결 사용
+            try {
+                this.directWs.send(JSON.stringify(command));
+                console.log('[WebSocket Client] 직접 명령 전송:', command);
+                return true;
+            } catch (error) {
+                console.error('[WebSocket Client] 직접 명령 전송 오류:', error);
+                return false;
+            }
         } else {
-            console.warn('[WebSocket Client] Electron API 없음');
+            console.warn('[WebSocket Client] 연결되지 않음');
             return false;
         }
     }
@@ -216,11 +227,71 @@ class WebSocketClient {
     }
 
     /**
+     * 개발 모드용 직접 WebSocket 연결 (fallback)
+     */
+    fallbackToDirectWebSocket() {
+        this.directWs = null;
+        this.connectDirect();
+    }
+
+    connectDirect() {
+        if (this.directWs && this.directWs.readyState === WebSocket.OPEN) {
+            return;
+        }
+
+        try {
+            this.directWs = new WebSocket('ws://127.0.0.1:8765');
+            
+            this.directWs.onopen = () => {
+                console.log('[WebSocket Client] 직접 연결 성공');
+                this.emit('connected');
+                
+                // 모터 자동 연결
+                this.sendCommand({
+                    cmd: 'connect',
+                    port: 'auto',
+                    baudrate: 19200,
+                    parity: 'none',
+                    databits: 8,
+                    stopbits: 1
+                });
+            };
+
+            this.directWs.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleMessage(data);
+                } catch (error) {
+                    console.error('[WebSocket Client] 메시지 파싱 오류:', error);
+                }
+            };
+
+            this.directWs.onclose = () => {
+                console.log('[WebSocket Client] 직접 연결 해제');
+                this.emit('disconnected');
+                
+                // 재연결 시도
+                setTimeout(() => this.connectDirect(), 2000);
+            };
+
+            this.directWs.onerror = (error) => {
+                console.error('[WebSocket Client] 직접 연결 오류:', error);
+            };
+
+        } catch (error) {
+            console.error('[WebSocket Client] 직접 연결 생성 오류:', error);
+        }
+    }
+
+    /**
      * 페이지 언로드 시 정리 (실제로는 연결 유지)
      */
     cleanup() {
         // Electron 메인 프로세스에서 연결을 관리하므로 실제 정리는 하지 않음
         console.log('[WebSocket Client] 페이지 언로드 - 연결은 유지됨');
+        if (this.directWs) {
+            this.directWs.close();
+        }
     }
 }
 

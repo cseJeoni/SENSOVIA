@@ -8,7 +8,7 @@ let isConnected = false;
 let reconnectAttempts = 0;
 const maxReconnectAttempts = 5;
 const reconnectDelay = 2000;
-const serverUrl = 'ws://localhost:8765';
+const serverUrl = 'ws://127.0.0.1:8765';
 
 function createWindow() {
   const win = new BrowserWindow({
