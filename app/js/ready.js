@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // 모터 상태 업데이트
   function updateMotorStatus(status) {
     // 모터 위치, 힘 등의 실시간 데이터 표시 (필요시 구현)
-    console.log('[Ready.js] 모터 상태:', status);
+    // console.log('[Ready.js] 모터 상태:', status); // 콘솔 로그 제거
     
     // 니들팁 연결 상태에 따른 경고 모달 제어
     // if (status.needle_tip_connected !== undefined) {
