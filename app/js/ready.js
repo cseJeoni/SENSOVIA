@@ -261,11 +261,11 @@ if (slider) {
   const soundImg = document.querySelector('.sidebar-icon .sound-control img');
   if (soundImg) {
     if (val == 0) {
-      soundImg.src = 'icon-white/icon_Sound(1).svg';
+      soundImg.src = '../icon-white/icon_Sound(1).svg';
     } else if (val > 0 && val <= 50) {
-      soundImg.src = 'icon-white/icon_Sound(2).svg';
+      soundImg.src = '../icon-white/icon_Sound(2).svg';
     } else {
-      soundImg.src = 'icon-white/icon_Sound(3).svg';
+      soundImg.src = '../icon-white/icon_Sound(3).svg';
     }
   }
 }
@@ -428,11 +428,11 @@ function updateSoundIcon(val) {
 const soundImg = document.querySelector('.sidebar-icon .sound-control img');
 if (!soundImg) return;
 if (val == 0) {
-  soundImg.src = 'icon-fill/icon_Sound(1).svg';
+  soundImg.src = '../icon-fill/icon_Sound(1).svg';
 } else if (val > 0 && val <= 50) {
-  soundImg.src = 'icon-fill/icon_Sound(2).svg';
+  soundImg.src = '../icon-fill/icon_Sound(2).svg';
 } else {
-  soundImg.src = 'icon-fill/icon_Sound(3).svg';
+  soundImg.src = '../icon-fill/icon_Sound(3).svg';
 }
 }
 
@@ -443,10 +443,10 @@ const slider = document.querySelector('.sidebar-icon .sound-control .volume-slid
 if (!soundImg || !slider) return;
 const val = Number(slider.value);
 if (val == 0) {
-  soundImg.src = 'icon-white/icon_Sound(1).svg';
+  soundImg.src = '../icon-white/icon_Sound(1).svg';
 } else if (val > 0 && val <= 50) {
-  soundImg.src = 'icon-white/icon_Sound(2).svg';
+  soundImg.src = '../icon-white/icon_Sound(2).svg';
 } else {
-  soundImg.src = 'icon-white/icon_Sound(3).svg';
+  soundImg.src = '../icon-white/icon_Sound(3).svg';
 }
 }
