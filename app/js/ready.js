@@ -323,11 +323,13 @@ document.addEventListener("DOMContentLoaded", function () {
           sendBtn.style.minWidth = sendBtn.offsetWidth + 'px';
           sendBtn.style.maxWidth = sendBtn.offsetWidth + 'px';
           
+          // 버튼 비활성화 스타일 적용
+          sendBtn.classList.add('disabled');
           if (sendBtnA) {
               sendBtnA.style.whiteSpace = 'nowrap';
               sendBtnA.style.overflow = 'hidden';
               sendBtnA.style.textOverflow = 'ellipsis';
-              sendBtnA.textContent = 'RUNNING...';
+              // 텍스트는 READY로 유지
           }
       } else {
           sendBtn.style.opacity = '1';
@@ -351,25 +353,24 @@ document.addEventListener("DOMContentLoaded", function () {
           sendBtn.style.minWidth = '';
           sendBtn.style.maxWidth = '';
           
+          // 버튼 활성화 스타일 복원
+          sendBtn.classList.remove('disabled');
           if (sendBtnA) {
               sendBtnA.style.whiteSpace = '';
               sendBtnA.style.overflow = '';
               sendBtnA.style.textOverflow = '';
-              sendBtnA.textContent = 'READY';
+              // 텍스트는 이미 READY로 유지됨
           }
       }
   }
   
   // 사이클 상태 표시 업데이트
   function updateCycleStatus(status) {
-      // 페이지 제목 영역에 상태 표시
+      // 페이지 제목 영역에 상태 표시 - 상태 메시지 제거
       const pageTitle = document.getElementById("page-title");
       if (pageTitle) {
-          if (status) {
-              pageTitle.innerHTML = `<a>AUTO MODE</a><br><small style="font-size: 14px; color: #588CF5;">${status}</small>`;
-          } else {
-              pageTitle.innerHTML = '<a>AUTO MODE</a>';
-          }
+          // 항상 AUTO MODE만 표시
+          pageTitle.innerHTML = '<a>AUTO MODE</a>';
       }
   }
   
@@ -416,12 +417,21 @@ document.addEventListener("DOMContentLoaded", function () {
       const gpio17Status = window.wsManager.motorStatus.gpio17;
       console.log('[Ready.js] GPIO17 상태:', gpio17Status);
       
-      // GPIO17이 LOW이면 니들팁이 연결되지 않음
+      // GPIO17이 LOW이면 니들팁이 연결되지 않음 (UNKNOWN 상태는 무시)
       if (gpio17Status === 'LOW' || gpio17Status === '0' || gpio17Status === 0) {
         showNeedleTipWarning();
       } else if (gpio17Status === 'HIGH' || gpio17Status === '1' || gpio17Status === 1) {
         hideNeedleTipWarning();
       }
+      // UNKNOWN 상태일 때는 아무것도 하지 않음
+    }
+  }
+
+  // GPIO 상태 읽기 명령 전송
+  function requestGPIOStatus() {
+    if (window.wsManager && window.wsManager.sendCommand) {
+      console.log('[Ready.js] GPIO 상태 읽기 요청');
+      window.wsManager.sendCommand({cmd: 'get_status'});
     }
   }
 
@@ -454,6 +464,10 @@ document.addEventListener("DOMContentLoaded", function () {
     window.wsManager.on('connected', () => {
       console.log('[Ready.js] WebSocket 연결됨');
       updateConnectionStatus(true);
+      // 연결 후 GPIO 상태 읽기
+      setTimeout(() => {
+        requestGPIOStatus();
+      }, 500);
     });
 
     window.wsManager.on('disconnected', () => {
@@ -831,7 +845,9 @@ if (val == 0) {
 }
 }
 
-// 페이지 로드 시 초기 니들팁 연결 상태 확인
+// 페이지 로드 시 WebSocket 연결 확인 후 GPIO 상태 읽기
 setTimeout(() => {
-  checkNeedleTipConnection();
-}, 1000); // WebSocket 연결 후 1초 대기
+  if (window.wsManager && window.wsManager.isConnected) {
+    requestGPIOStatus();
+  }
+}, 2000); // WebSocket 연결 후 2초 대기
