@@ -381,23 +381,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 니들팁 경고창 표시
-  function showNeedleTipWarning() {
-    const modalOverlay = document.getElementById('modalOverlay');
-    if (modalOverlay) {
-      modalOverlay.style.display = 'flex';
-      console.log('[Ready.js] 니들팁 연결 경고창 표시');
-    }
-  }
+  // // 니들팁 경고창 표시
+  // function showNeedleTipWarning() {
+  //   const modalOverlay = document.getElementById('modalOverlay');
+  //   if (modalOverlay) {
+  //     modalOverlay.style.display = 'flex';
+  //     console.log('[Ready.js] 니들팁 연결 경고창 표시');
+  //   }
+  // }
 
-  // 니들팁 경고창 숨김
-  function hideNeedleTipWarning() {
-    const modalOverlay = document.getElementById('modalOverlay');
-    if (modalOverlay) {
-      modalOverlay.style.display = 'none';
-      console.log('[Ready.js] 니들팁 연결 경고창 숨김');
-    }
-  }
+  // // 니들팁 경고창 숨김
+  // function hideNeedleTipWarning() {
+  //   const modalOverlay = document.getElementById('modalOverlay');
+  //   if (modalOverlay) {
+  //     modalOverlay.style.display = 'none';
+  //     console.log('[Ready.js] 니들팁 연결 경고창 숨김');
+  //   }
+  // }
 
   // WebSocket 매니저 초기화 - WebSocketClient 사용
   if (!window.wsManager) {
