@@ -394,6 +394,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // 초기 렌더링
   renderPage();
 
+  // WebSocket 매니저 초기화
+  if (!window.wsManager) {
+    window.wsManager = new WebSocketManager();
+  }
+
   // WebSocket 이벤트 리스너 등록
   if (window.wsManager) {
     // WebSocket 연결 상태 모니터링
