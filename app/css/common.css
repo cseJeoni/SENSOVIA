@@ -10,7 +10,43 @@
 }
 
 body {
-    font-family: 'Noto Sans', sans-serif;
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  /* 화면 깜박임 방지 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* 페이지 로드 시 부드러운 전환 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 모든 요소에 부드러운 전환 효과 */
+*, *::before, *::after {
+  transition: all 0.2s ease-out;
+}
+
+/* 페이지 전환 애니메이션 */
+body {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 링크 클릭 시 부드러운 전환 */
+a {
+  transition: all 0.2s ease;
 }
 
 /* 공통 레이아웃 */
