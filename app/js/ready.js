@@ -135,6 +135,9 @@ document.addEventListener("DOMContentLoaded", function () {
           updateCycleButtonState(true);
           console.log("=== 사이클 시작 ===");
           
+          // 사이클 시작 시 니들 올라간 이미지로 변경
+          setHandpieceImage('ready_07.png');
+          
           // 파라미터 값들 추출
           const depthItem = values.find(item => item.name === "DEPTH");
           const intensityItem = values.find(item => item.name === "INTENSITY");
@@ -199,6 +202,9 @@ document.addEventListener("DOMContentLoaded", function () {
           
           console.log("=== 사이클 완료 ===");
           updateCycleStatus("사이클 완료");
+          
+          // 사이클 완료 시 니들 내려간 이미지로 변경
+          setHandpieceImage('ready_08.png');
           
           // 완료 후 잠시 대기 후 상태 초기화
           setTimeout(() => {

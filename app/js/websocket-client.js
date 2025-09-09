@@ -160,6 +160,29 @@ class WebSocketClient {
     }
 
     /**
+     * RF 샷 명령 전송
+     */
+    sendRFShot(intensity, rfTime) {
+        const command = {
+            cmd: 'rf_shot',
+            intensity: parseInt(intensity),
+            rf_time: parseInt(rfTime)
+        };
+        return this.sendCommand(command);
+    }
+
+    /**
+     * RF DTR HIGH 명령 전송 (GPIO0 제어)
+     */
+    sendRFDTRHigh(rfTime) {
+        const command = {
+            cmd: 'rf_dtr_high',
+            rf_time: parseInt(rfTime)
+        };
+        return this.sendCommand(command);
+    }
+
+    /**
      * 연결 상태 확인
      */
     async getConnectionStatus() {
