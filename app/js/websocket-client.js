@@ -101,6 +101,12 @@ class WebSocketClient {
                 this.emit('rf_dtr_high_result', data.result);
                 break;
                 
+            case 'shot_increment':
+                // SHOT COUNT 증가 결과
+                console.log('[WebSocket Client] SHOT COUNT 증가 결과:', data.result);
+                this.emit('shot_increment', data.result);
+                break;
+                
             default:
                 console.log('[WebSocket] 알 수 없는 메시지 타입:', data);
         }

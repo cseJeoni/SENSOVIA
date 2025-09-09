@@ -213,7 +213,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 
@@ -230,14 +230,12 @@
 
 
 .sohtCount-value {
-    margin-top: 25px;
 }
 
 
 .sohtCount-value p {
     font-size: 12px;
     color: #aab4c1;
-    margin-bottom: 10px;
 }
 
 .sohtCount-value h3 {

@@ -233,13 +233,16 @@ document.addEventListener("DOMContentLoaded", function () {
                   await new Promise((resolve, reject) => {
                       // shotCount 증가 결과를 기다리는 일회성 리스너
                       const handleShotIncrement = (result) => {
+                          console.log("SHOT COUNT 증가 응답 수신:", result);
                           window.wsManager.off('shot_increment', handleShotIncrement);
-                          if (result.success) {
-                              console.log("SHOT COUNT 증가 완료:", result.data.shot_count);
+                          
+                          // 백엔드 응답 형식에 맞게 수정
+                          if (result && (result.success || result.status === 'success' || result.includes('성공'))) {
+                              console.log("SHOT COUNT 증가 완료:", result);
                               resolve(result);
                           } else {
-                              console.error("SHOT COUNT 증가 실패:", result.error);
-                              reject(new Error(result.error));
+                              console.error("SHOT COUNT 증가 실패:", result);
+                              reject(new Error(result.error || result));
                           }
                       };
                       
