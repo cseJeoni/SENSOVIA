@@ -226,22 +226,63 @@ document.addEventListener("DOMContentLoaded", function () {
   // 사이클 버튼 상태 업데이트
   function updateCycleButtonState(inProgress) {
       const sendBtnA = sendBtn.querySelector('a');
+      const motorContainer = document.querySelector('.motor.container');
+      const motorSetPoint = document.querySelector('.motor-set-point');
+      
       if (inProgress) {
           sendBtn.style.opacity = '0.6';
           sendBtn.style.pointerEvents = 'none';
-          sendBtn.style.width = sendBtn.offsetWidth + 'px'; // 현재 너비 고정
-          sendBtn.style.height = sendBtn.offsetHeight + 'px'; // 현재 높이 고정
+          
+          // 컨테이너 크기 고정
+          if (motorContainer) {
+              motorContainer.style.width = motorContainer.offsetWidth + 'px';
+              motorContainer.style.minWidth = motorContainer.offsetWidth + 'px';
+              motorContainer.style.maxWidth = motorContainer.offsetWidth + 'px';
+          }
+          if (motorSetPoint) {
+              motorSetPoint.style.width = motorSetPoint.offsetWidth + 'px';
+              motorSetPoint.style.minWidth = motorSetPoint.offsetWidth + 'px';
+              motorSetPoint.style.maxWidth = motorSetPoint.offsetWidth + 'px';
+          }
+          
+          // 버튼 크기 고정
+          sendBtn.style.width = sendBtn.offsetWidth + 'px';
+          sendBtn.style.height = sendBtn.offsetHeight + 'px';
+          sendBtn.style.minWidth = sendBtn.offsetWidth + 'px';
+          sendBtn.style.maxWidth = sendBtn.offsetWidth + 'px';
+          
           if (sendBtnA) {
-              sendBtnA.style.whiteSpace = 'nowrap'; // 텍스트 줄바꿈 방지
+              sendBtnA.style.whiteSpace = 'nowrap';
+              sendBtnA.style.overflow = 'hidden';
+              sendBtnA.style.textOverflow = 'ellipsis';
               sendBtnA.textContent = 'RUNNING...';
           }
       } else {
           sendBtn.style.opacity = '1';
           sendBtn.style.pointerEvents = 'auto';
-          sendBtn.style.width = ''; // 원래 크기로 복원
-          sendBtn.style.height = ''; // 원래 크기로 복원
+          
+          // 컨테이너 크기 복원
+          if (motorContainer) {
+              motorContainer.style.width = '';
+              motorContainer.style.minWidth = '';
+              motorContainer.style.maxWidth = '';
+          }
+          if (motorSetPoint) {
+              motorSetPoint.style.width = '';
+              motorSetPoint.style.minWidth = '';
+              motorSetPoint.style.maxWidth = '';
+          }
+          
+          // 버튼 크기 복원
+          sendBtn.style.width = '';
+          sendBtn.style.height = '';
+          sendBtn.style.minWidth = '';
+          sendBtn.style.maxWidth = '';
+          
           if (sendBtnA) {
               sendBtnA.style.whiteSpace = '';
+              sendBtnA.style.overflow = '';
+              sendBtnA.style.textOverflow = '';
               sendBtnA.textContent = 'READY';
           }
       }
