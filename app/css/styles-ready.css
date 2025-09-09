@@ -213,14 +213,9 @@
 }
 
 .sohtCount-value h3 {
-    font-size: 32px;
-    color: #ffffff;
-    font-weight: bold;
-}
-
-.sohtCount-value h3 #shot-count {
     font-size: 22px;
-    color: #4180FF;
+    color: #4180ff;
+    font-weight: bold;
 }
 
 .sohtCount-value span {
@@ -561,14 +556,13 @@ circle:nth-child(2) {
 
 .sendBtn.disabled {
     background-color: rgba(128, 128, 128, 0.3);
-    border: 2px solid rgba(128, 128, 128, 0.5);
+    border: 2px solid #808080;
     cursor: not-allowed;
-    opacity: 0.6;
     pointer-events: none;
 }
 
 .sendBtn.disabled a {
-    color: rgba(255, 255, 255, 0.5);
+    color: #808080;
 }
 
 

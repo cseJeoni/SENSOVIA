@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
       { id: 0, name: "TIP TYPE", value: "NONE", hasButtons: false },
       { id: 1, name: "INTENSITY", value: "50%" },
       { id: 2, name: "RF", value: "2000ms" },
-      { id: 3, name: "DEPTH", value: "3.5mm" },
+      { id: 3, name: "DEPTH", value: "2.0mm" },
       { id: 4, name: "MODE", value: "0.2s" },
       { id: 5, name: "DELAT TIME", value: "100ms" }
   ];
@@ -302,65 +302,11 @@ document.addEventListener("DOMContentLoaded", function () {
       const motorSetPoint = document.querySelector('.motor-set-point');
       
       if (inProgress) {
-          sendBtn.style.opacity = '0.6';
-          sendBtn.style.pointerEvents = 'none';
-          
-          // 컨테이너 크기 고정
-          if (motorContainer) {
-              motorContainer.style.width = motorContainer.offsetWidth + 'px';
-              motorContainer.style.minWidth = motorContainer.offsetWidth + 'px';
-              motorContainer.style.maxWidth = motorContainer.offsetWidth + 'px';
-          }
-          if (motorSetPoint) {
-              motorSetPoint.style.width = motorSetPoint.offsetWidth + 'px';
-              motorSetPoint.style.minWidth = motorSetPoint.offsetWidth + 'px';
-              motorSetPoint.style.maxWidth = motorSetPoint.offsetWidth + 'px';
-          }
-          
-          // 버튼 크기 고정
-          sendBtn.style.width = sendBtn.offsetWidth + 'px';
-          sendBtn.style.height = sendBtn.offsetHeight + 'px';
-          sendBtn.style.minWidth = sendBtn.offsetWidth + 'px';
-          sendBtn.style.maxWidth = sendBtn.offsetWidth + 'px';
-          
-          // 버튼 비활성화 스타일 적용
+          // 버튼 비활성화 스타일 적용 - 크기 변경 없이 색상만 변경
           sendBtn.classList.add('disabled');
-          if (sendBtnA) {
-              sendBtnA.style.whiteSpace = 'nowrap';
-              sendBtnA.style.overflow = 'hidden';
-              sendBtnA.style.textOverflow = 'ellipsis';
-              // 텍스트는 READY로 유지
-          }
       } else {
-          sendBtn.style.opacity = '1';
-          sendBtn.style.pointerEvents = 'auto';
-          
-          // 컨테이너 크기 복원
-          if (motorContainer) {
-              motorContainer.style.width = '';
-              motorContainer.style.minWidth = '';
-              motorContainer.style.maxWidth = '';
-          }
-          if (motorSetPoint) {
-              motorSetPoint.style.width = '';
-              motorSetPoint.style.minWidth = '';
-              motorSetPoint.style.maxWidth = '';
-          }
-          
-          // 버튼 크기 복원
-          sendBtn.style.width = '';
-          sendBtn.style.height = '';
-          sendBtn.style.minWidth = '';
-          sendBtn.style.maxWidth = '';
-          
-          // 버튼 활성화 스타일 복원
+          // 버튼 활성화 스타일 복원 - 색상만 복원
           sendBtn.classList.remove('disabled');
-          if (sendBtnA) {
-              sendBtnA.style.whiteSpace = '';
-              sendBtnA.style.overflow = '';
-              sendBtnA.style.textOverflow = '';
-              // 텍스트는 이미 READY로 유지됨
-          }
       }
   }
   
@@ -530,12 +476,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const tipTypeName = tipTypeMap[data.tip_type] || `${data.tip_type}PIN`;
         setTipType(tipTypeName);
         
-        // SHOT COUNT 업데이트 및 표시
+        // SHOT COUNT 업데이트
         const shotCountDisplay = document.getElementById('shot-count-display');
         const shotCountElement = document.getElementById('shot-count');
         if (shotCountDisplay && shotCountElement && data.shot_count !== undefined) {
           shotCountElement.textContent = data.shot_count;
-          shotCountDisplay.style.visibility = 'visible'; // EEPROM 읽기 완료 시 표시
+          shotCountDisplay.style.display = 'block'; // EEPROM 읽기 완료 시 표시
           // 원형 프로그레스 바도 업데이트
           updateShotCountProgress(data.shot_count, 2000);
         }
@@ -548,11 +494,9 @@ document.addEventListener("DOMContentLoaded", function () {
     window.wsManager.on('shot_increment', (result) => {
       console.log('[Ready.js] SHOT COUNT 증가 결과:', result);
       if (result.success && result.data) {
-        const shotCountDisplay = document.getElementById('shot-count-display');
         const shotCountElement = document.getElementById('shot-count');
-        if (shotCountDisplay && shotCountElement) {
+        if (shotCountElement) {
           shotCountElement.textContent = result.data.shot_count;
-          shotCountDisplay.style.visibility = 'visible'; // 증가 시에도 표시
           // 원형 프로그레스 바도 업데이트
           updateShotCountProgress(result.data.shot_count, 2000);
           console.log(`[Ready.js] SHOT COUNT 업데이트: ${result.data.shot_count}`);
