@@ -201,6 +201,16 @@ class WebSocketClient {
     }
 
     /**
+     * SHOT COUNT 증가
+     */
+    incrementShotCount() {
+        const command = {
+            cmd: 'shot_increment'
+        };
+        return this.sendCommand(command);
+    }
+
+    /**
      * 연결 상태 확인
      */
     async getConnectionStatus() {

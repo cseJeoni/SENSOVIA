@@ -223,35 +223,48 @@ document.addEventListener("DOMContentLoaded", function () {
           console.log("6단계: SHOT COUNT 증가");
           updateCycleStatus("SHOT COUNT 업데이트 중...");
           
+          // WebSocket 매니저 상태 확인
+          console.log("WebSocket 매니저 상태:", window.wsManager);
+          console.log("incrementShotCount 함수:", typeof window.wsManager?.incrementShotCount);
+          
           // shotCount 증가 후 완료까지 대기
           try {
-              await new Promise((resolve, reject) => {
-                  // shotCount 증가 결과를 기다리는 일회성 리스너
-                  const handleShotIncrement = (result) => {
-                      window.wsManager.off('shot_increment', handleShotIncrement);
-                      if (result.success) {
-                          console.log("SHOT COUNT 증가 완료:", result.data.shot_count);
-                          resolve(result);
-                      } else {
-                          console.error("SHOT COUNT 증가 실패:", result.error);
-                          reject(new Error(result.error));
+              if (window.wsManager && typeof window.wsManager.incrementShotCount === 'function') {
+                  await new Promise((resolve, reject) => {
+                      // shotCount 증가 결과를 기다리는 일회성 리스너
+                      const handleShotIncrement = (result) => {
+                          window.wsManager.off('shot_increment', handleShotIncrement);
+                          if (result.success) {
+                              console.log("SHOT COUNT 증가 완료:", result.data.shot_count);
+                              resolve(result);
+                          } else {
+                              console.error("SHOT COUNT 증가 실패:", result.error);
+                              reject(new Error(result.error));
+                          }
+                      };
+                      
+                      window.wsManager.on('shot_increment', handleShotIncrement);
+                      
+                      // shotCount 증가 명령 전송
+                      if (!window.wsManager.incrementShotCount()) {
+                          window.wsManager.off('shot_increment', handleShotIncrement);
+                          reject(new Error("SHOT COUNT 증가 명령 전송 실패"));
                       }
-                  };
-                  
-                  window.wsManager.on('shot_increment', handleShotIncrement);
-                  
-                  // shotCount 증가 명령 전송
-                  if (!window.wsManager.incrementShotCount()) {
-                      window.wsManager.off('shot_increment', handleShotIncrement);
-                      reject(new Error("SHOT COUNT 증가 명령 전송 실패"));
+                      
+                      // 타임아웃 설정 (5초)
+                      setTimeout(() => {
+                          window.wsManager.off('shot_increment', handleShotIncrement);
+                          reject(new Error("SHOT COUNT 증가 타임아웃"));
+                      }, 5000);
+                  });
+              } else {
+                  console.error("WebSocket 매니저가 초기화되지 않았거나 incrementShotCount 함수가 없습니다.");
+                  // 대안: 직접 WebSocket으로 명령 전송
+                  if (window.wsManager && window.wsManager.sendCommand) {
+                      const result = await window.wsManager.sendCommand({cmd: 'shot_increment'});
+                      console.log("직접 명령 전송 결과:", result);
                   }
-                  
-                  // 타임아웃 설정 (5초)
-                  setTimeout(() => {
-                      window.wsManager.off('shot_increment', handleShotIncrement);
-                      reject(new Error("SHOT COUNT 증가 타임아웃"));
-                  }, 5000);
-              });
+              }
           } catch (error) {
               console.warn("SHOT COUNT 증가 오류:", error.message);
           }
@@ -394,9 +407,9 @@ document.addEventListener("DOMContentLoaded", function () {
   // 초기 렌더링
   renderPage();
 
-  // WebSocket 매니저 초기화
+  // WebSocket 매니저 초기화 - WebSocketClient 사용
   if (!window.wsManager) {
-    window.wsManager = new WebSocketManager();
+    window.wsManager = new WebSocketClient();
   }
 
   // WebSocket 이벤트 리스너 등록
