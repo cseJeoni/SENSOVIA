@@ -213,9 +213,14 @@
 }
 
 .sohtCount-value h3 {
-    font-size: 22px;
-    color: #4180ff;
+    font-size: 32px;
+    color: #ffffff;
     font-weight: bold;
+}
+
+.sohtCount-value h3 #shot-count {
+    font-size: 22px;
+    color: #4180FF;
 }
 
 .sohtCount-value span {
