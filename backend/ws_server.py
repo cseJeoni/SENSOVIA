@@ -59,8 +59,44 @@ try:
     # GPIO12: 풋 스위치용 (풀다운 설정, 바운스 타임 지원)
     pin12 = Button(12, pull_up=False, bounce_time=0.2)
     
+    # GPIO17: 니들팁 커넥트 핀 (풀다운 설정, 인터럽트 방식)
+    pin17 = Button(17, pull_up=False, bounce_time=0.1)
+    
+    # GPIO22: LED 출력 (니들팁 연결됨 표시)
+    pin22 = DigitalOutputDevice(22)
+    
+    # GPIO27: LED 출력 (니들팁 분리됨 표시)
+    pin27 = DigitalOutputDevice(27)
+    
     # 초기 니들팁 상태 설정 (is_pressed는 풀업 상태에서 LOW일 때 True)
     needle_tip_connected = pin23.is_pressed
+    
+    # GPIO17 상태에 따른 LED 제어 함수
+    def update_needle_tip_leds():
+        if pin17.is_pressed:  # GPIO17이 HIGH (Button 클래스에서는 is_pressed 사용)
+            pin22.on()   # GPIO22 LED ON
+            pin27.off()  # GPIO27 LED OFF
+            print("[GPIO17] 니들팁 연결됨 - GPIO22 LED ON")
+        else:  # GPIO17이 LOW
+            pin22.off()  # GPIO22 LED OFF
+            pin27.on()   # GPIO27 LED ON
+            print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
+    
+    # GPIO17 인터럽트 이벤트 핸들러
+    def _on_needle_tip_connected():
+        print("[GPIO17] 니들팁 연결 인터럽트 발생")
+        pin22.on()   # GPIO22 LED ON
+        pin27.off()  # GPIO27 LED OFF
+        print("[GPIO17] 니들팁 연결됨 - GPIO22 LED ON")
+    
+    def _on_needle_tip_disconnected():
+        print("[GPIO17] 니들팁 분리 인터럽트 발생")
+        pin22.off()  # GPIO22 LED OFF
+        pin27.on()   # GPIO27 LED ON
+        print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
+    
+    # 초기 LED 상태 설정
+    update_needle_tip_leds()
     print(f"[GPIO23] 초기 니들팁 상태: {'연결됨' if needle_tip_connected else '분리됨'}")
     print(f"[GPIO0] RF DTR 핀 초기화 완료")
     print(f"[GPIO12] 풋 스위치 초기화 완료 (풀다운 설정)")
@@ -108,6 +144,8 @@ try:
     pin23.when_released = _on_tip_disconnected
     pin12.when_pressed = _on_foot_switch_pressed_sync
     pin12.when_released = _on_foot_switch_released_sync
+    pin17.when_pressed = _on_needle_tip_connected
+    pin17.when_released = _on_needle_tip_disconnected
     
     # 풋 스위치 이벤트 핸들러가 제대로 등록되었는지 확인
     print(f"[GPIO12] 이벤트 핸들러 등록 확인:")
@@ -115,7 +153,14 @@ try:
     print(f"[GPIO12] when_released: {pin12.when_released}")
     
     gpio_available = True
-    print("[OK] GPIO 18/23/12 초기화 완료 (gpiozero 라이브러리)")
+    print("[OK] GPIO 18/23/12/17/22/27 초기화 완료 (gpiozero 라이브러리)")
+    print(f"[GPIO17] 니들팁 커넥트 핀 초기화 완료 (풀다운, 인터럽트 방식)")
+    print(f"[GPIO17] 초기 니들팁 커넥트 상태: {'HIGH' if pin17.is_pressed else 'LOW'}")
+    print(f"[GPIO22] LED 출력 핀 초기화 완료 (니들팁 연결 표시)")
+    print(f"[GPIO27] LED 출력 핀 초기화 완료 (니들팁 분리 표시)")
+    print(f"[GPIO17] 이벤트 핸들러 등록 확인:")
+    print(f"[GPIO17] when_pressed: {pin17.when_pressed}")
+    print(f"[GPIO17] when_released: {pin17.when_released}")
 
 except ImportError as ie:
     print(f"[ERROR] GPIO 모듈을 찾을 수 없습니다: {ie}. GPIO 기능이 비활성화됩니다.")
