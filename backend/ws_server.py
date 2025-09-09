@@ -413,18 +413,21 @@ async def handler(websocket):
                     if gpio_available and pin0:
                         rf_time = data.get("rf_time", 60)  # RF 시간 값 (ms)
                         
-                        # DTR HIGH 설정
+                        # DTR HIGH 설정과 동시에 LED 깜빡임 시작
                         pin0.on()
                         print(f"[GPIO0] DTR HIGH 설정 ({rf_time}ms)")
                         
-                        # RF 샷 중 LED 깜빡임 제어 함수 호출
-                        await blink_leds_during_rf_shot(rf_time)
+                        # DTR HIGH 기간 동안 LED 깜빡임 (비동기 실행)
+                        led_task = asyncio.create_task(blink_leds_during_dtr_high(rf_time))
                         
                         # 지정된 시간만큼 대기 후 LOW로 변경
                         await asyncio.sleep(rf_time / 1000.0)  # ms를 초로 변환
                         
                         pin0.off()
                         print(f"[GPIO0] DTR LOW 설정")
+                        
+                        # LED 깜빡임 태스크 완료 대기
+                        await led_task
                         
                         await websocket.send(json.dumps({"type": "rf_dtr_high", "result": f"DTR {rf_time}ms 동안 HIGH 설정 완료"}))
                     else:
@@ -471,6 +474,54 @@ async def blink_leds_during_rf_shot(duration_ms):
             await asyncio.sleep(blink_interval)
         
         print(f"[LED] RF 샷 중 LED 깜빡임 완료")
+        
+    finally:
+        # 원래 LED 상태로 복원
+        if original_pin22_state:
+            pin22.on()
+        else:
+            pin22.off()
+        
+        if original_pin27_state:
+            pin27.on()
+        else:
+            pin27.off()
+        
+        print(f"[LED] LED 상태 복원 완료")
+
+async def blink_leds_during_dtr_high(duration_ms):
+    """
+    DTR HIGH 기간 동안 GPIO22(파란색)와 GPIO27(빨간색) LED를 번갈아가며 깜빡임
+    duration_ms: DTR HIGH 지속 시간 (밀리초)
+    """
+    if not gpio_available or not pin22 or not pin27:
+        return
+    
+    print(f"[LED] DTR HIGH 중 LED 깜빡임 시작 ({duration_ms}ms)")
+    
+    # 기존 LED 상태 저장
+    original_pin22_state = pin22.value
+    original_pin27_state = pin27.value
+    
+    start_time = time.time()
+    duration_s = duration_ms / 1000.0
+    blink_interval = 0.1  # 100ms 간격으로 깜빡임 (0.1초)
+    
+    try:
+        led_state = True  # True: GPIO22 ON, GPIO27 OFF / False: GPIO22 OFF, GPIO27 ON
+        
+        while (time.time() - start_time) < duration_s:
+            if led_state:
+                pin22.on()   # 파란색 LED ON
+                pin27.off()  # 빨간색 LED OFF
+            else:
+                pin22.off()  # 파란색 LED OFF
+                pin27.on()   # 빨간색 LED ON
+            
+            led_state = not led_state  # 상태 토글
+            await asyncio.sleep(blink_interval)
+        
+        print(f"[LED] DTR HIGH 중 LED 깜빡임 완료")
         
     finally:
         # 원래 LED 상태로 복원
