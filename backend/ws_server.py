@@ -59,6 +59,7 @@ try:
     print(f"[GPIO23] 초기 니들팁 상태: {'연결됨' if needle_tip_connected else '분리됨'}")
     print(f"[GPIO0] RF DTR 핀 초기화 완료")
     print(f"[GPIO12] 풋 스위치 초기화 완료 (풀다운 설정)")
+    print(f"[GPIO12] 초기 풋 스위치 상태: {'HIGH' if pin12.is_pressed else 'LOW'}")
 
     # 니들팁 연결/해제 이벤트 핸들러 정의
     def _on_tip_connected():
@@ -73,7 +74,11 @@ try:
 
     # 풋 스위치 이벤트 핸들러 정의
     async def _on_foot_switch_pressed():
-        print("[GPIO12] 풋 스위치 눌림 - 사이클 시작 신호 전송")
+        print("=" * 50)
+        print("[GPIO12] 풋 스위치 눌림 감지!")
+        print(f"[GPIO12] 연결된 클라이언트 수: {len(connected_clients)}")
+        print("[GPIO12] 사이클 시작 신호 전송 중...")
+        
         # 모든 연결된 클라이언트에게 풋 스위치 신호 전송
         foot_switch_data = {
             "type": "foot_switch",
@@ -83,21 +88,39 @@ try:
             }
         }
         
+        print(f"[GPIO12] 전송할 데이터: {json.dumps(foot_switch_data)}")
+        
+        success_count = 0
         for ws in connected_clients.copy():
             try:
                 await ws.send(json.dumps(foot_switch_data))
+                success_count += 1
+                print(f"[GPIO12] 클라이언트에게 신호 전송 성공 ({success_count})")
             except Exception as e:
                 print(f"[WARN] 풋 스위치 신호 전송 실패: {e}")
                 connected_clients.discard(ws)
+        
+        print(f"[GPIO12] 총 {success_count}개 클라이언트에게 신호 전송 완료")
+        print("=" * 50)
 
     def _on_foot_switch_pressed_sync():
+        print("[GPIO12] 풋 스위치 인터럽트 발생 - 비동기 태스크 생성")
         # 동기 함수에서 비동기 함수 호출
         asyncio.create_task(_on_foot_switch_pressed())
+    
+    def _on_foot_switch_released_sync():
+        print("[GPIO12] 풋 스위치 released 인터럽트 발생")
 
     # 이벤트 핸들러 할당
     pin23.when_pressed = _on_tip_connected
     pin23.when_released = _on_tip_disconnected
     pin12.when_pressed = _on_foot_switch_pressed_sync
+    pin12.when_released = _on_foot_switch_released_sync
+    
+    # 풋 스위치 이벤트 핸들러가 제대로 등록되었는지 확인
+    print(f"[GPIO12] 이벤트 핸들러 등록 확인:")
+    print(f"[GPIO12] when_pressed: {pin12.when_pressed}")
+    print(f"[GPIO12] when_released: {pin12.when_released}")
     
     gpio_available = True
     print("[OK] GPIO 18/23/12 초기화 완료 (gpiozero 라이브러리)")

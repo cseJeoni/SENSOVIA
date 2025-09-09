@@ -186,8 +186,13 @@ class WebSocketManager {
                 
             case 'foot_switch':
                 // 풋 스위치 신호 처리
-                console.log('[WebSocket] 풋 스위치 신호 수신:', data.data);
+                console.log('='.repeat(50));
+                console.log('[WebSocket] 풋 스위치 신호 수신!');
+                console.log('[WebSocket] 수신된 데이터:', JSON.stringify(data.data));
+                console.log('[WebSocket] foot_switch 이벤트 발생 중...');
                 this.emit('foot_switch', data.data);
+                console.log('[WebSocket] foot_switch 이벤트 발생 완료');
+                console.log('='.repeat(50));
                 break;
                 
             case 'error':

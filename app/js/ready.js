@@ -120,6 +120,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 사이클 실행 함수
   async function executeCycle() {
+      console.log('★'.repeat(60));
+      console.log('★ executeCycle() 함수 진입!');
+      console.log('★ cycleInProgress 상태:', cycleInProgress);
+      console.log('★'.repeat(60));
+      
       if (cycleInProgress) {
           console.warn("사이클이 이미 실행 중입니다.");
           return;
@@ -165,7 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // 2단계: 0.3초 딜레이 (타겟 위치 도달 확실하게 하기 위함)
           console.log("2단계: 0.3초 딜레이 (위치 안정화)");
           updateCycleStatus("위치 안정화 중...");
-          await delay(300);
+          await delay(1000);
           
           // 3단계: RF intensity(level)로 RF(onTime) 만큼 쏘기 (dtr high)
           console.log("3단계: RF 샷 실행");
@@ -296,13 +301,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 풋 스위치 신호 수신 시 사이클 실행
     window.wsManager.on('foot_switch', (data) => {
+      console.log('='.repeat(60));
+      console.log('[Ready.js] 풋 스위치 이벤트 리스너 호출됨!');
+      console.log('[Ready.js] 수신된 데이터:', JSON.stringify(data));
+      console.log('[Ready.js] data.pressed:', data.pressed);
+      
       if (data.pressed) {
-        console.log('[Ready.js] 풋 스위치 신호 수신 - 사이클 시작');
+        console.log('[Ready.js] 풋 스위치 신호 수신 - 사이클 시작!');
+        console.log('[Ready.js] WebSocket 연결 상태:', window.wsManager.isConnected);
         updateFootSwitchStatus(true);
         
         // 사이클 실행 (WebSocket 연결 상태 확인)
         if (window.wsManager.isConnected) {
+          console.log('[Ready.js] executeCycle() 함수 호출 시작');
           executeCycle();
+          console.log('[Ready.js] executeCycle() 함수 호출 완료');
         } else {
           console.warn("WebSocket이 연결되지 않아 사이클을 실행할 수 없습니다.");
         }
@@ -311,7 +324,10 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => {
           updateFootSwitchStatus(false);
         }, 1000);
+      } else {
+        console.log('[Ready.js] 풋 스위치 released 신호 수신');
       }
+      console.log('='.repeat(60));
     });
 
     // EEPROM 데이터로 TIP TYPE 업데이트
