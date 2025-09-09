@@ -1,5 +1,5 @@
 /**
- * 페이지 전환 시 깜박임 방지를 위한 스크립트
+ * 페이지 전환 시 빠른 페이드아웃 효과를 위한 스크립트
  */
 
 // 페이지 로드 완료 시 fade-in 효과
@@ -7,16 +7,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.body.style.opacity = '1';
 });
 
-// 페이지 이동 시 부드러운 전환 효과
+// 페이지 이동 시 빠른 페이드아웃 전환 효과
 function smoothPageTransition(url) {
     // 현재 페이지를 fade-out
-    document.body.style.transition = 'opacity 0.2s ease-out';
+    document.body.style.transition = 'opacity 0.1s ease-out';
     document.body.style.opacity = '0';
     
     // fade-out 완료 후 페이지 이동
     setTimeout(() => {
         window.location.href = url;
-    }, 200);
+    }, 100);
 }
 
 // 모든 링크에 부드러운 전환 적용

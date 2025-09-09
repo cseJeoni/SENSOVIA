@@ -29,10 +29,10 @@ html {
   transition: all 0.2s ease-out;
 }
 
-/* 페이지 전환 애니메이션 */
+/* 페이지 전환 애니메이션 - 빠른 페이드인 효과 */
 body {
   opacity: 0;
-  animation: fadeIn 0.3s ease-in forwards;
+  animation: fadeIn 0.1s ease-in forwards;
 }
 
 @keyframes fadeIn {

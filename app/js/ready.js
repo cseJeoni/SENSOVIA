@@ -631,26 +631,11 @@ if (storageBtn) {
 
 // 여기까지 사운드 볼륨 조절 //
 
-const overlay  = document.getElementById('modalOverlay');
-const closeBtn = document.getElementById('closeModalBtn');
-const confirmBtn = document.getElementById('confirmBtn');
+// 모달 관련 코드 제거됨
 
-// 페이지 로드 직후 모달 띄우기
-window.addEventListener('DOMContentLoaded', () => {
-overlay.classList.add('active');
-});
+// 모달 관련 코드 완전히 제거됨
 
-// 닫기(X) 버튼
-closeBtn.addEventListener('click', () => {
-overlay.classList.remove('active');
-});
-
-// 배경 클릭 시에도 닫기
-overlay.addEventListener('click', e => {
-if (e.target === overlay) {
-  overlay.classList.remove('active');
-}
-});
+// 모달 관련 코드 완전히 제거됨
 
 // 클릭한 뒤에는 배지를 제거하고, 페이지 이동
 document.querySelector('.sidebar-icon .user-link')
