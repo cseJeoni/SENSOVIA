@@ -333,12 +333,19 @@ async def handler(websocket):
                     await websocket.send(json.dumps({"type": "eeprom_write", "result": result}))
                 elif data["cmd"] == "shot_increment":
                     try:
+                        print(f"[EEPROM] shot_increment 명령 수신")
+                        print(f"[EEPROM] eeprom_available: {eeprom_available}")
+                        
                         if eeprom_available:
                             # 현재 EEPROM 데이터 읽기
+                            print(f"[EEPROM] 현재 데이터 읽기 시작 - I2C_BUS: {I2C_BUS}, Address: 0x50, Offset: 0x10")
                             current_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                            print(f"[EEPROM] 현재 데이터: {current_data}")
                             
                             # shotCount 증가
-                            new_shot_count = current_data["shot_count"] + 1
+                            old_shot_count = current_data["shot_count"]
+                            new_shot_count = old_shot_count + 1
+                            print(f"[EEPROM] shotCount 증가: {old_shot_count} -> {new_shot_count}")
                             
                             # EEPROM에 업데이트된 shotCount 쓰기
                             manufacture_date_parts = current_data["manufacture_date"].split("-")
@@ -347,7 +354,9 @@ async def handler(websocket):
                                 "month": int(manufacture_date_parts[1]),
                                 "day": int(manufacture_date_parts[2])
                             }
+                            print(f"[EEPROM] 제조일자: {manufacture_date}")
                             
+                            print(f"[EEPROM] EEPROM 쓰기 시작...")
                             write_eeprom_data(
                                 I2C_BUS, 0x50, 0x10,
                                 current_data["tip_type"],
@@ -355,13 +364,25 @@ async def handler(websocket):
                                 manufacture_date,
                                 current_data["manufacturer"]
                             )
+                            print(f"[EEPROM] EEPROM 쓰기 완료")
+                            
+                            # 쓰기 완료 후 잠시 대기
+                            import time
+                            time.sleep(0.1)
                             
                             # 업데이트된 데이터 다시 읽기
+                            print(f"[EEPROM] 업데이트된 데이터 다시 읽기...")
                             updated_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                            print(f"[EEPROM] 업데이트된 데이터: {updated_data}")
+                            
                             result = {"success": True, "data": updated_data}
                         else:
+                            print(f"[EEPROM] EEPROM 기능 사용 불가")
                             result = {"success": False, "error": "EEPROM 기능 사용 불가"}
                     except Exception as e:
+                        print(f"[EEPROM] shot_increment 오류: {str(e)}")
+                        import traceback
+                        traceback.print_exc()
                         result = {"success": False, "error": str(e)}
                     await websocket.send(json.dumps({"type": "shot_increment", "result": result}))
                 elif data["cmd"] == "rf_shot":

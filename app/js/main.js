@@ -1,7 +1,7 @@
 const autoBtn = document.querySelector('.auto');
 if (autoBtn) {
   autoBtn.addEventListener('click', function() {
-    window.location.href = 'standby.html';
+    window.location.href = 'ready.html';
   });
 }
 

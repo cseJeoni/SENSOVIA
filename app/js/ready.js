@@ -222,8 +222,38 @@ document.addEventListener("DOMContentLoaded", function () {
           // 6단계: SHOT COUNT 증가
           console.log("6단계: SHOT COUNT 증가");
           updateCycleStatus("SHOT COUNT 업데이트 중...");
-          if (!window.wsManager.incrementShotCount()) {
-              console.warn("SHOT COUNT 증가 명령 전송 실패");
+          
+          // shotCount 증가 후 완료까지 대기
+          try {
+              await new Promise((resolve, reject) => {
+                  // shotCount 증가 결과를 기다리는 일회성 리스너
+                  const handleShotIncrement = (result) => {
+                      window.wsManager.off('shot_increment', handleShotIncrement);
+                      if (result.success) {
+                          console.log("SHOT COUNT 증가 완료:", result.data.shot_count);
+                          resolve(result);
+                      } else {
+                          console.error("SHOT COUNT 증가 실패:", result.error);
+                          reject(new Error(result.error));
+                      }
+                  };
+                  
+                  window.wsManager.on('shot_increment', handleShotIncrement);
+                  
+                  // shotCount 증가 명령 전송
+                  if (!window.wsManager.incrementShotCount()) {
+                      window.wsManager.off('shot_increment', handleShotIncrement);
+                      reject(new Error("SHOT COUNT 증가 명령 전송 실패"));
+                  }
+                  
+                  // 타임아웃 설정 (5초)
+                  setTimeout(() => {
+                      window.wsManager.off('shot_increment', handleShotIncrement);
+                      reject(new Error("SHOT COUNT 증가 타임아웃"));
+                  }, 5000);
+              });
+          } catch (error) {
+              console.warn("SHOT COUNT 증가 오류:", error.message);
           }
           
           console.log("=== 사이클 완료 ===");
