@@ -12,6 +12,7 @@ class WebSocketClient {
             force: 0,
             sensor: 0,
             setPos: 0,
+            gpio17: 'UNKNOWN',
             gpio18: 'UNKNOWN',
             gpio23: 'UNKNOWN',
             needle_tip_connected: false

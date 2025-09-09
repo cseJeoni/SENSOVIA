@@ -410,6 +410,39 @@ document.addEventListener("DOMContentLoaded", function () {
   // 초기 렌더링
   renderPage();
 
+  // 니들팁 연결 상태 확인 함수
+  function checkNeedleTipConnection() {
+    if (window.wsManager && window.wsManager.motorStatus) {
+      const gpio17Status = window.wsManager.motorStatus.gpio17;
+      console.log('[Ready.js] GPIO17 상태:', gpio17Status);
+      
+      // GPIO17이 LOW이면 니들팁이 연결되지 않음
+      if (gpio17Status === 'LOW' || gpio17Status === '0' || gpio17Status === 0) {
+        showNeedleTipWarning();
+      } else if (gpio17Status === 'HIGH' || gpio17Status === '1' || gpio17Status === 1) {
+        hideNeedleTipWarning();
+      }
+    }
+  }
+
+  // 니들팁 경고창 표시
+  function showNeedleTipWarning() {
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) {
+      modalOverlay.style.display = 'flex';
+      console.log('[Ready.js] 니들팁 연결 경고창 표시');
+    }
+  }
+
+  // 니들팁 경고창 숨김
+  function hideNeedleTipWarning() {
+    const modalOverlay = document.getElementById('modalOverlay');
+    if (modalOverlay) {
+      modalOverlay.style.display = 'none';
+      console.log('[Ready.js] 니들팁 연결 경고창 숨김');
+    }
+  }
+
   // WebSocket 매니저 초기화 - WebSocketClient 사용
   if (!window.wsManager) {
     window.wsManager = new WebSocketClient();
@@ -431,6 +464,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // 모터 상태 업데이트
     window.wsManager.on('motor_status', (status) => {
       updateMotorStatus(status);
+      // 모터 상태 업데이트 시 니들팁 연결 상태도 확인
+      checkNeedleTipConnection();
     });
 
     // 풋 스위치 신호 수신 시 사이클 실행
@@ -795,3 +830,8 @@ if (val == 0) {
   soundImg.src = '../icon-white/icon_Sound(3).svg';
 }
 }
+
+// 페이지 로드 시 초기 니들팁 연결 상태 확인
+setTimeout(() => {
+  checkNeedleTipConnection();
+}, 1000); // WebSocket 연결 후 1초 대기
