@@ -83,6 +83,12 @@ class WebSocketClient {
                 this.emit('server_error', data.result);
                 break;
                 
+            case 'foot_switch':
+                // 풋스위치 신호 처리
+                console.log('[WebSocket Client] 풋스위치 신호 수신:', data.data);
+                this.emit('foot_switch', data.data);
+                break;
+                
             default:
                 console.log('[WebSocket] 알 수 없는 메시지 타입:', data);
         }
