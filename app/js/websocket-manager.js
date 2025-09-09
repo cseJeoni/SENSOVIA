@@ -184,6 +184,12 @@ class WebSocketManager {
                 this.emit('rf_dtr_result', data.result);
                 break;
                 
+            case 'foot_switch':
+                // 풋 스위치 신호 처리
+                console.log('[WebSocket] 풋 스위치 신호 수신:', data.data);
+                this.emit('foot_switch', data.data);
+                break;
+                
             case 'error':
                 console.error('[WebSocket] 서버 오류:', data.result);
                 this.emit('server_error', data.result);

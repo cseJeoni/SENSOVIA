@@ -239,6 +239,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
   }
   
+  // 풋 스위치 상태 표시 업데이트
+  function updateFootSwitchStatus(pressed) {
+      const pageTitle = document.getElementById("page-title");
+      if (pageTitle && pressed) {
+          pageTitle.innerHTML = `<a>AUTO MODE</a><br><small style="font-size: 14px; color: #FF6B6B;">풋 스위치 활성화</small>`;
+      }
+  }
+  
   // 딜레이 함수
   function delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -284,6 +292,26 @@ document.addEventListener("DOMContentLoaded", function () {
     // 모터 상태 업데이트
     window.wsManager.on('motor_status', (status) => {
       updateMotorStatus(status);
+    });
+
+    // 풋 스위치 신호 수신 시 사이클 실행
+    window.wsManager.on('foot_switch', (data) => {
+      if (data.pressed) {
+        console.log('[Ready.js] 풋 스위치 신호 수신 - 사이클 시작');
+        updateFootSwitchStatus(true);
+        
+        // 사이클 실행 (WebSocket 연결 상태 확인)
+        if (window.wsManager.isConnected) {
+          executeCycle();
+        } else {
+          console.warn("WebSocket이 연결되지 않아 사이클을 실행할 수 없습니다.");
+        }
+        
+        // 풋 스위치 상태 표시 초기화 (1초 후)
+        setTimeout(() => {
+          updateFootSwitchStatus(false);
+        }, 1000);
+      }
     });
 
     // EEPROM 데이터로 TIP TYPE 업데이트

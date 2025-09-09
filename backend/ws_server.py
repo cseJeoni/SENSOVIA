@@ -32,6 +32,7 @@ gpio_available = False
 pin18 = None
 pin23 = None # pin23 객체 추가
 pin0 = None  # GPIO0 for RF DTR control
+pin12 = None # GPIO12 for foot switch (풋 스위치)
 needle_tip_connected = False
 
 # RF 연결 관련 변수
@@ -50,10 +51,14 @@ try:
     # GPIO0: RF DTR 제어용 출력 핀
     pin0 = DigitalOutputDevice(0)
     
+    # GPIO12: 풋 스위치용 (풀다운 설정, 바운스 타임 지원)
+    pin12 = Button(12, pull_up=False, bounce_time=0.2)
+    
     # 초기 니들팁 상태 설정 (is_pressed는 풀업 상태에서 LOW일 때 True)
     needle_tip_connected = pin23.is_pressed
     print(f"[GPIO23] 초기 니들팁 상태: {'연결됨' if needle_tip_connected else '분리됨'}")
     print(f"[GPIO0] RF DTR 핀 초기화 완료")
+    print(f"[GPIO12] 풋 스위치 초기화 완료 (풀다운 설정)")
 
     # 니들팁 연결/해제 이벤트 핸들러 정의
     def _on_tip_connected():
@@ -66,12 +71,36 @@ try:
         needle_tip_connected = False
         print("[GPIO23] 니들팁 상태 변경: 분리됨")
 
+    # 풋 스위치 이벤트 핸들러 정의
+    async def _on_foot_switch_pressed():
+        print("[GPIO12] 풋 스위치 눌림 - 사이클 시작 신호 전송")
+        # 모든 연결된 클라이언트에게 풋 스위치 신호 전송
+        foot_switch_data = {
+            "type": "foot_switch",
+            "data": {
+                "pressed": True,
+                "timestamp": time.time()
+            }
+        }
+        
+        for ws in connected_clients.copy():
+            try:
+                await ws.send(json.dumps(foot_switch_data))
+            except Exception as e:
+                print(f"[WARN] 풋 스위치 신호 전송 실패: {e}")
+                connected_clients.discard(ws)
+
+    def _on_foot_switch_pressed_sync():
+        # 동기 함수에서 비동기 함수 호출
+        asyncio.create_task(_on_foot_switch_pressed())
+
     # 이벤트 핸들러 할당
     pin23.when_pressed = _on_tip_connected
     pin23.when_released = _on_tip_disconnected
+    pin12.when_pressed = _on_foot_switch_pressed_sync
     
     gpio_available = True
-    print("[OK] GPIO 18/23 초기화 완료 (gpiozero 라이브러리)")
+    print("[OK] GPIO 18/23/12 초기화 완료 (gpiozero 라이브러리)")
 
 except ImportError as ie:
     print(f"[ERROR] GPIO 모듈을 찾을 수 없습니다: {ie}. GPIO 기능이 비활성화됩니다.")
@@ -312,7 +341,7 @@ async def push_motor_status():
         
         data = {}
         # GPIO 상태 읽기
-        gpio18_state = "UNKNOWN"; gpio23_state = "UNKNOWN"
+        gpio18_state = "UNKNOWN"; gpio23_state = "UNKNOWN"; gpio12_state = "UNKNOWN"
         if gpio_available:
             if pin18:
                 gpio18_state = "HIGH" if pin18.value else "LOW"
@@ -320,13 +349,16 @@ async def push_motor_status():
             if pin23:
                 # is_pressed가 True이면 LOW 상태(연결됨), False이면 HIGH 상태(분리됨)
                 gpio23_state = "LOW" if pin23.is_pressed else "HIGH"
+            if pin12:
+                # 풋 스위치 상태 (풀다운 설정이므로 is_pressed가 True이면 HIGH)
+                gpio12_state = "HIGH" if pin12.is_pressed else "LOW"
 
         if motor_connected:
             data = {
                 "type": "status",
                 "data": {
                     "position": motor.position, "force": motor.force, "sensor": motor.sensor, "setPos": motor.setPos,
-                    "gpio18": gpio18_state, "gpio23": gpio23_state,
+                    "gpio18": gpio18_state, "gpio23": gpio23_state, "gpio12": gpio12_state,
                     "needle_tip_connected": needle_tip_connected,
                     "motor_connected": True,
                     "rf_connected": rf_connected,
@@ -337,7 +369,7 @@ async def push_motor_status():
                 "type": "status",
                 "data": {
                     "motor_connected": False,
-                    "gpio18": gpio18_state, "gpio23": gpio23_state,
+                    "gpio18": gpio18_state, "gpio23": gpio23_state, "gpio12": gpio12_state,
                     "needle_tip_connected": needle_tip_connected,
                     "rf_connected": rf_connected,
                 }
@@ -362,6 +394,7 @@ def cleanup_gpio():
             if pin18: pin18.close()
             if pin23: pin23.close()
             if pin0: pin0.close()
+            if pin12: pin12.close()
             print("[OK] GPIO 리소스 정리 완료")
         except Exception as e:
             print(f"[ERROR] GPIO 정리 오류: {e}")
