@@ -536,7 +536,6 @@ circle:nth-child(2) {
 
 
 .sendBtn {
-    border: none;
     cursor: pointer;
     width: 360px;
     height: 110px;
