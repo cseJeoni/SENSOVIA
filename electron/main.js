@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol } = require('electron');
 const path = require('path');
 const WebSocket = require('ws');
+const fs = require('fs');
 
 // WebSocket 연결 관리 변수
 let ws = null;
@@ -153,6 +154,13 @@ ipcMain.handle('websocket-status', () => {
 });
 
 app.whenReady().then(() => {
+  // 커스텀 프로토콜 등록 (file:// 프로토콜 보안 문제 해결)
+  protocol.registerFileProtocol('app', (request, callback) => {
+    const url = request.url.substr(6); // 'app://' 제거
+    const filePath = path.normalize(path.join(__dirname, '..', 'app', url));
+    callback({ path: filePath });
+  });
+
   const win = createWindow();
   
   // 앱 시작 시 WebSocket 자동 연결

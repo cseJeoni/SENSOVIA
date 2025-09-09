@@ -171,7 +171,7 @@ function initThreeJS() {
     // GLB 모델 로드
     const loader = new GLTFLoader();
     loader.load(
-        './src/models/HandPiece-3.glb',
+        'app://src/models/HandPiece-3.glb',
         (gltf) => {
             const model = gltf.scene;
             
