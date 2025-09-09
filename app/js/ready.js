@@ -229,11 +229,21 @@ document.addEventListener("DOMContentLoaded", function () {
       if (inProgress) {
           sendBtn.style.opacity = '0.6';
           sendBtn.style.pointerEvents = 'none';
-          if (sendBtnA) sendBtnA.textContent = 'RUNNING...';
+          sendBtn.style.width = sendBtn.offsetWidth + 'px'; // 현재 너비 고정
+          sendBtn.style.height = sendBtn.offsetHeight + 'px'; // 현재 높이 고정
+          if (sendBtnA) {
+              sendBtnA.style.whiteSpace = 'nowrap'; // 텍스트 줄바꿈 방지
+              sendBtnA.textContent = 'RUNNING...';
+          }
       } else {
           sendBtn.style.opacity = '1';
           sendBtn.style.pointerEvents = 'auto';
-          if (sendBtnA) sendBtnA.textContent = 'READY';
+          sendBtn.style.width = ''; // 원래 크기로 복원
+          sendBtn.style.height = ''; // 원래 크기로 복원
+          if (sendBtnA) {
+              sendBtnA.style.whiteSpace = '';
+              sendBtnA.textContent = 'READY';
+          }
       }
   }
   

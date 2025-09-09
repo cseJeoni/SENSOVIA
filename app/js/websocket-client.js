@@ -89,6 +89,18 @@ class WebSocketClient {
                 this.emit('foot_switch', data.data);
                 break;
                 
+            case 'rf_shot':
+                // RF 샷 명령 결과
+                console.log('[WebSocket Client] RF 샷 결과:', data.result);
+                this.emit('rf_shot_result', data.result);
+                break;
+                
+            case 'rf_dtr_high':
+                // RF DTR HIGH 명령 결과
+                console.log('[WebSocket Client] RF DTR HIGH 결과:', data.result);
+                this.emit('rf_dtr_high_result', data.result);
+                break;
+                
             default:
                 console.log('[WebSocket] 알 수 없는 메시지 타입:', data);
         }
