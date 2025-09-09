@@ -220,11 +220,9 @@ class WebSocketManager {
     /**
      * EEPROM 데이터 읽기
      */
-    readEEPROM(mtrVersion = '2.0', country = 'CLASSYS') {
+    readEEPROM() {
         const command = {
-            cmd: 'eeprom_read',
-            mtrVersion: mtrVersion,
-            country: country
+            cmd: 'eeprom_read'
         };
         return this.sendCommand(command);
     }
@@ -232,17 +230,23 @@ class WebSocketManager {
     /**
      * EEPROM 데이터 쓰기
      */
-    writeEEPROM(tipType, shotCount, year, month, day, makerCode, mtrVersion = '2.0', country = 'CLASSYS') {
+    writeEEPROM(tipType, shotCount, manufactureDate, manufacturer) {
         const command = {
             cmd: 'eeprom_write',
-            tipType: tipType,
-            shotCount: shotCount,
-            year: year,
-            month: month,
-            day: day,
-            makerCode: makerCode,
-            mtrVersion: mtrVersion,
-            country: country
+            tip_type: tipType,
+            shot_count: shotCount,
+            manufacture_date: manufactureDate,
+            manufacturer: manufacturer
+        };
+        return this.sendCommand(command);
+    }
+
+    /**
+     * SHOT COUNT 증가
+     */
+    incrementShotCount() {
+        const command = {
+            cmd: 'shot_increment'
         };
         return this.sendCommand(command);
     }

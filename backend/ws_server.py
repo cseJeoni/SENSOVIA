@@ -10,6 +10,7 @@ from rf_utils import (
     send_rf_output_command_util, send_rf_shot_command_util,
     build_rf_shot_command, set_dtr_high_util
 )
+from eeprom_utils import read_eeprom_data, write_eeprom_data
 import serial
 
 # EEPROM 관련 import
@@ -305,20 +306,64 @@ async def handler(websocket):
                 elif data["cmd"] == "move":
                     result = motor.move_to_position(data.get("position"), data.get("mode", "position"))
                     await websocket.send(json.dumps({"type": "serial", "result": result}))
-                elif data["cmd"] == "eeprom_write":
-                    mtr_version = data.get("mtrVersion", "2.0"); country = data.get("country")
-                    if mtr_version == "4.0":
-                        result = write_eeprom_mtr40(data.get("tipType"), data.get("shotCount", 0), data.get("year"), data.get("month"), data.get("day"), data.get("makerCode"))
-                    else:
-                        result = write_eeprom_mtr20(data.get("tipType"), data.get("shotCount", 0), data.get("year"), data.get("month"), data.get("day"), data.get("makerCode"), country)
-                    if result.get("success"):
-                        read_result = read_eeprom_mtr40() if mtr_version == "4.0" else read_eeprom_mtr20(country)
-                        if read_result.get("success"): result["data"] = read_result
-                    await websocket.send(json.dumps({"type": "eeprom_write", "result": result}))
                 elif data["cmd"] == "eeprom_read":
-                    mtr_version = data.get("mtrVersion", "2.0"); country = data.get("country")
-                    result = read_eeprom_mtr40() if mtr_version == "4.0" else read_eeprom_mtr20(country)
+                    try:
+                        if eeprom_available:
+                            eeprom_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                            result = {"success": True, "data": eeprom_data}
+                        else:
+                            result = {"success": False, "error": "EEPROM 기능 사용 불가"}
+                    except Exception as e:
+                        result = {"success": False, "error": str(e)}
                     await websocket.send(json.dumps({"type": "eeprom_read", "result": result}))
+                elif data["cmd"] == "eeprom_write":
+                    try:
+                        if eeprom_available:
+                            tip_type = data.get("tip_type", 64)
+                            shot_count = data.get("shot_count", 0)
+                            manufacture_date = data.get("manufacture_date", {"year": 2024, "month": 1, "day": 1})
+                            manufacturer = data.get("manufacturer", 1)
+                            
+                            write_eeprom_data(I2C_BUS, 0x50, 0x10, tip_type, shot_count, manufacture_date, manufacturer)
+                            result = {"success": True, "message": "EEPROM 쓰기 완료"}
+                        else:
+                            result = {"success": False, "error": "EEPROM 기능 사용 불가"}
+                    except Exception as e:
+                        result = {"success": False, "error": str(e)}
+                    await websocket.send(json.dumps({"type": "eeprom_write", "result": result}))
+                elif data["cmd"] == "shot_increment":
+                    try:
+                        if eeprom_available:
+                            # 현재 EEPROM 데이터 읽기
+                            current_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                            
+                            # shotCount 증가
+                            new_shot_count = current_data["shot_count"] + 1
+                            
+                            # EEPROM에 업데이트된 shotCount 쓰기
+                            manufacture_date_parts = current_data["manufacture_date"].split("-")
+                            manufacture_date = {
+                                "year": int(manufacture_date_parts[0]),
+                                "month": int(manufacture_date_parts[1]),
+                                "day": int(manufacture_date_parts[2])
+                            }
+                            
+                            write_eeprom_data(
+                                I2C_BUS, 0x50, 0x10,
+                                current_data["tip_type"],
+                                new_shot_count,
+                                manufacture_date,
+                                current_data["manufacturer"]
+                            )
+                            
+                            # 업데이트된 데이터 다시 읽기
+                            updated_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                            result = {"success": True, "data": updated_data}
+                        else:
+                            result = {"success": False, "error": "EEPROM 기능 사용 불가"}
+                    except Exception as e:
+                        result = {"success": False, "error": str(e)}
+                    await websocket.send(json.dumps({"type": "shot_increment", "result": result}))
                 elif data["cmd"] == "rf_shot":
                     # RF 샷 명령 처리
                     if rf_connected and rf_connection:

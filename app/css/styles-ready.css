@@ -148,7 +148,7 @@
 .handpiece-value {
     display: flex;
     width: 240px;
-    height: 300px;
+    height: 150px;
     border-radius: 40px;
     background-color: #fff;
     margin-top: 60px;
@@ -191,7 +191,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
 }
 
 .handpiece .border-bottom {
@@ -204,7 +203,7 @@
 }
 
 .sohtCount-value {
-    margin-top: 25px;
+    
 }
 
 .sohtCount-value p {
@@ -257,7 +256,7 @@
 
 .circle {
     cursor: pointer;
-    margin: 1rem;
+    margin: 0;
     width: 80px;
     height: 80px;
     border-radius: 50%;

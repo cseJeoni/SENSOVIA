@@ -98,8 +98,27 @@ document.addEventListener("DOMContentLoaded", function () {
       }
   }
 
+  // shotCount에 따른 원형 프로그레스 바 업데이트 함수
+  function updateShotCountProgress(shotCount, maxCount = 2000) {
+    const progressCircle = document.querySelector('.circle_2 circle:nth-child(2)');
+    if (progressCircle) {
+      // 퍼센트 계산 (0~100%)
+      const percentage = Math.min((shotCount / maxCount) * 100, 100);
+      
+      // stroke-dasharray는 220px (원 둘레)
+      // stroke-dashoffset = 220px - (220px * percentage / 100)
+      const dashArray = 220;
+      const dashOffset = dashArray - (dashArray * percentage / 100);
+      
+      progressCircle.style.strokeDashoffset = `${dashOffset}px`;
+      
+      console.log(`[Progress] shotCount: ${shotCount}/${maxCount} (${percentage.toFixed(1)}%) - dashOffset: ${dashOffset}px`);
+    }
+  }
+
   // 전역 함수로 노출 (다른 스크립트에서 사용할 수 있도록)
   window.setTipType = setTipType;
+  window.updateShotCountProgress = updateShotCountProgress;
 
   sendBtn.addEventListener("click", function (e) {
       e.preventDefault(); // 페이지 이동 방지
@@ -199,6 +218,13 @@ document.addEventListener("DOMContentLoaded", function () {
           
           // 복귀 완료 대기
           await delay(500);
+          
+          // 6단계: SHOT COUNT 증가
+          console.log("6단계: SHOT COUNT 증가");
+          updateCycleStatus("SHOT COUNT 업데이트 중...");
+          if (!window.wsManager.incrementShotCount()) {
+              console.warn("SHOT COUNT 증가 명령 전송 실패");
+          }
           
           console.log("=== 사이클 완료 ===");
           updateCycleStatus("사이클 완료");
@@ -387,29 +413,45 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log('='.repeat(60));
     });
 
-    // EEPROM 데이터로 TIP TYPE 업데이트
+    // EEPROM 데이터로 TIP TYPE 및 SHOT COUNT 업데이트
     window.wsManager.on('eeprom_read', (result) => {
-      if (result.success && result.tipType) {
-        const tipTypeMap = {
-          1: '16PIN',
-          2: '25PIN', 
-          3: '49PIN',
-          4: '64PIN',
-          5: '81PIN'
-        };
-        const tipTypeName = tipTypeMap[result.tipType] || 'UNKNOWN';
-        setTipType(tipTypeName);
+      console.log('[Ready.js] EEPROM 읽기 결과:', result);
+      if (result.success && result.data) {
+        const data = result.data;
         
-        // 핸드피스 영역의 TIP TYPE도 업데이트
-        const handpieceTipType = document.querySelector('.tipType-value h3');
-        if (handpieceTipType) {
-          handpieceTipType.textContent = tipTypeName;
-        }
+        // TIP TYPE 매핑
+        const tipTypeMap = {
+          16: '16PIN',
+          25: '25PIN', 
+          49: '49PIN',
+          64: '64PIN',
+          81: '81PIN'
+        };
+        const tipTypeName = tipTypeMap[data.tip_type] || `${data.tip_type}PIN`;
+        setTipType(tipTypeName);
         
         // SHOT COUNT 업데이트
         const shotCountElement = document.querySelector('.sohtCount-value h3');
-        if (shotCountElement && result.shotCount !== undefined) {
-          shotCountElement.innerHTML = `${result.shotCount}<span>/2000</span>`;
+        if (shotCountElement && data.shot_count !== undefined) {
+          shotCountElement.innerHTML = `${data.shot_count}<span>/2000</span>`;
+          // 원형 프로그레스 바도 업데이트
+          updateShotCountProgress(data.shot_count, 2000);
+        }
+        
+        console.log(`[Ready.js] UI 업데이트 완료 - TIP: ${tipTypeName}, SHOT: ${data.shot_count}`);
+      }
+    });
+
+    // SHOT COUNT 증가 결과 처리
+    window.wsManager.on('shot_increment', (result) => {
+      console.log('[Ready.js] SHOT COUNT 증가 결과:', result);
+      if (result.success && result.data) {
+        const shotCountElement = document.querySelector('.sohtCount-value h3');
+        if (shotCountElement) {
+          shotCountElement.innerHTML = `${result.data.shot_count}<span>/2000</span>`;
+          // 원형 프로그레스 바도 업데이트
+          updateShotCountProgress(result.data.shot_count, 2000);
+          console.log(`[Ready.js] SHOT COUNT 업데이트: ${result.data.shot_count}`);
         }
       }
     });
