@@ -2,6 +2,8 @@ import asyncio
 import websockets
 import json
 import time
+import queue
+import threading
 from motor_threaded_controller import MotorThreadedController
 from rf_utils import (
     open_rf_port_util, close_rf_port_util, 
@@ -39,6 +41,9 @@ needle_tip_connected = False
 rf_connection = None
 rf_connected = False
 
+# 풋 스위치 이벤트 큐
+foot_switch_queue = queue.Queue()
+
 try:
     from gpiozero import DigitalInputDevice, Button, DigitalOutputDevice
     
@@ -72,14 +77,13 @@ try:
         needle_tip_connected = False
         print("[GPIO23] 니들팁 상태 변경: 분리됨")
 
-    # 풋 스위치 이벤트 핸들러 정의
-    async def _on_foot_switch_pressed():
+    # 풋 스위치 이벤트 핸들러 정의 (동기 함수로 변경)
+    def _on_foot_switch_pressed_sync():
         print("=" * 50)
         print("[GPIO12] 풋 스위치 눌림 감지!")
-        print(f"[GPIO12] 연결된 클라이언트 수: {len(connected_clients)}")
-        print("[GPIO12] 사이클 시작 신호 전송 중...")
+        print("[GPIO12] 이벤트 큐에 신호 추가")
         
-        # 모든 연결된 클라이언트에게 풋 스위치 신호 전송
+        # 큐에 풋 스위치 이벤트 추가
         foot_switch_data = {
             "type": "foot_switch",
             "data": {
@@ -88,25 +92,13 @@ try:
             }
         }
         
-        print(f"[GPIO12] 전송할 데이터: {json.dumps(foot_switch_data)}")
+        try:
+            foot_switch_queue.put_nowait(foot_switch_data)
+            print("[GPIO12] 풋 스위치 이벤트 큐에 추가 완료")
+        except queue.Full:
+            print("[WARN] 풋 스위치 이벤트 큐가 가득참")
         
-        success_count = 0
-        for ws in connected_clients.copy():
-            try:
-                await ws.send(json.dumps(foot_switch_data))
-                success_count += 1
-                print(f"[GPIO12] 클라이언트에게 신호 전송 성공 ({success_count})")
-            except Exception as e:
-                print(f"[WARN] 풋 스위치 신호 전송 실패: {e}")
-                connected_clients.discard(ws)
-        
-        print(f"[GPIO12] 총 {success_count}개 클라이언트에게 신호 전송 완료")
         print("=" * 50)
-
-    def _on_foot_switch_pressed_sync():
-        print("[GPIO12] 풋 스위치 인터럽트 발생 - 비동기 태스크 생성")
-        # 동기 함수에서 비동기 함수 호출
-        asyncio.create_task(_on_foot_switch_pressed())
     
     def _on_foot_switch_released_sync():
         print("[GPIO12] 풋 스위치 released 인터럽트 발생")
@@ -356,6 +348,27 @@ async def push_motor_status():
     global motor_reconnect_task
     while True:
         await asyncio.sleep(0.05)
+        
+        # 풋 스위치 이벤트 큐 처리
+        try:
+            while not foot_switch_queue.empty():
+                foot_switch_data = foot_switch_queue.get_nowait()
+                print(f"[GPIO12] 큐에서 풋 스위치 이벤트 처리: {json.dumps(foot_switch_data)}")
+                print(f"[GPIO12] 연결된 클라이언트 수: {len(connected_clients)}")
+                
+                success_count = 0
+                for ws in connected_clients.copy():
+                    try:
+                        await ws.send(json.dumps(foot_switch_data))
+                        success_count += 1
+                        print(f"[GPIO12] 클라이언트에게 신호 전송 성공 ({success_count})")
+                    except Exception as e:
+                        print(f"[WARN] 풋 스위치 신호 전송 실패: {e}")
+                        connected_clients.discard(ws)
+                
+                print(f"[GPIO12] 총 {success_count}개 클라이언트에게 신호 전송 완료")
+        except queue.Empty:
+            pass
         
         motor_connected = motor.is_connected()
         if not motor_connected and (motor_reconnect_task is None or motor_reconnect_task.done()):
