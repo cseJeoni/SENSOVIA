@@ -535,7 +535,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const shotCountElement = document.getElementById('shot-count');
         if (shotCountDisplay && shotCountElement && data.shot_count !== undefined) {
           shotCountElement.textContent = data.shot_count;
-          shotCountDisplay.style.display = 'block'; // EEPROM 읽기 완료 시 표시
+          shotCountDisplay.style.visibility = 'visible'; // EEPROM 읽기 완료 시 표시
           // 원형 프로그레스 바도 업데이트
           updateShotCountProgress(data.shot_count, 2000);
         }
@@ -552,7 +552,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const shotCountElement = document.getElementById('shot-count');
         if (shotCountDisplay && shotCountElement) {
           shotCountElement.textContent = result.data.shot_count;
-          shotCountDisplay.style.display = 'block'; // 증가 시에도 표시
+          shotCountDisplay.style.visibility = 'visible'; // 증가 시에도 표시
           // 원형 프로그레스 바도 업데이트
           updateShotCountProgress(result.data.shot_count, 2000);
           console.log(`[Ready.js] SHOT COUNT 업데이트: ${result.data.shot_count}`);
