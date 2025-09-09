@@ -514,51 +514,51 @@ document.querySelector('.sidebar-icon .user-link')
   //  그냥 내비게이션하려면 preventDefault() 생략)
 });
 
-const handpiece = document.querySelector('.handpiece');
+  const handpiece = document.querySelector('.handpiece');
 
-// 핸드피스 이미지 변경 함수
-function setHandpieceImage(imageName) {
-    if (handpiece) {
-        handpiece.style.background = `url('../img/${imageName}') no-repeat center`;
-        handpiece.style.backgroundSize = 'cover';
-    }
-}
+  // 핸드피스 이미지 변경 함수
+  function setHandpieceImage(imageName) {
+      if (handpiece) {
+          handpiece.style.background = `url('../img/${imageName}') no-repeat center`;
+          handpiece.style.backgroundSize = 'cover';
+      }
+  }
 
-// 수동 버튼 이벤트 (기존 기능 유지)
-document.getElementById('cleanBtn').addEventListener('click', e => {
-    e.preventDefault();
-    setHandpieceImage('ready_07.png');
-});
-document.getElementById('normalBtn').addEventListener('click', e => {
-    e.preventDefault();
-    setHandpieceImage('ready_08.png');
-});
+  // 수동 버튼 이벤트 (기존 기능 유지)
+  document.getElementById('cleanBtn').addEventListener('click', e => {
+      e.preventDefault();
+      setHandpieceImage('ready_07.png');
+  });
+  document.getElementById('normalBtn').addEventListener('click', e => {
+      e.preventDefault();
+      setHandpieceImage('ready_08.png');
+  });
 
-// WebSocket 클라이언트 초기화 및 사이클 상태 감지
-if (typeof WebSocketClient !== 'undefined') {
-    const wsClient = new WebSocketClient();
-    
-    // 사이클 상태 변경 감지
-    wsClient.on('motor_status', (data) => {
-        // 사이클 시작 감지 (모터가 움직이기 시작할 때)
-        if (data.position > 0 && data.force > 0) {
-            setHandpieceImage('ready_07.png'); // 사이클 시작
-        }
-    });
-    
-    wsClient.on('cycle_complete', (data) => {
-        setHandpieceImage('ready_08.png'); // 사이클 완료
-    });
-    
-    // 풋스위치 상태 감지를 통한 사이클 제어
-    wsClient.on('footswitch_status', (data) => {
-        if (data.pressed) {
-            setHandpieceImage('ready_07.png'); // 풋스위치 눌림 - 사이클 시작
-        } else {
-            setHandpieceImage('ready_08.png'); // 풋스위치 해제 - 사이클 종료
-        }
-    });
-}
+  // WebSocket 클라이언트 초기화 및 사이클 상태 감지
+  if (typeof WebSocketClient !== 'undefined') {
+      const wsClient = new WebSocketClient();
+      
+      // 사이클 상태 변경 감지
+      wsClient.on('motor_status', (data) => {
+          // 사이클 시작 감지 (모터가 움직이기 시작할 때)
+          if (data.position > 0 && data.force > 0) {
+              setHandpieceImage('ready_07.png'); // 사이클 시작
+          }
+      });
+      
+      wsClient.on('cycle_complete', (data) => {
+          setHandpieceImage('ready_08.png'); // 사이클 완료
+      });
+      
+      // 풋스위치 상태 감지를 통한 사이클 제어
+      wsClient.on('footswitch_status', (data) => {
+          if (data.pressed) {
+              setHandpieceImage('ready_07.png'); // 풋스위치 눌림 - 사이클 시작
+          } else {
+              setHandpieceImage('ready_08.png'); // 풋스위치 해제 - 사이클 종료
+          }
+      });
+  }
 
 // sidebar, sidebar-Setting 아이콘 꾹 누르는 동안 icon-fill, 떼면 icon-white 효과
 const iconMap = {
