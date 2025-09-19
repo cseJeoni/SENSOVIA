@@ -34,12 +34,21 @@ class RaspberryPiBuildManager:
             print("❌ Node.js가 설치되지 않았습니다.")
             return False
         
-        # npm 확인
-        try:
-            result = subprocess.run(['npm', '--version'], 
-                                  capture_output=True, text=True, check=True)
-            print(f"✅ npm: {result.stdout.strip()}")
-        except (subprocess.CalledProcessError, FileNotFoundError):
+        # npm 확인 (윈도우 호환성 개선)
+        npm_commands = ['npm', 'npm.cmd']
+        npm_found = False
+        
+        for npm_cmd in npm_commands:
+            try:
+                result = subprocess.run([npm_cmd, '--version'], 
+                                      capture_output=True, text=True, check=True)
+                print(f"✅ npm: {result.stdout.strip()}")
+                npm_found = True
+                break
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+        
+        if not npm_found:
             print("❌ npm이 설치되지 않았습니다.")
             return False
         
@@ -91,7 +100,19 @@ class RaspberryPiBuildManager:
         """Node.js 의존성 설치"""
         print("\n📦 Node.js 의존성 설치 중...")
         
+        # 윈도우 호환성을 위한 npm 명령어 시도
+        npm_commands = ['npm', 'npm.cmd']
+        
+        for npm_cmd in npm_commands:
+            try:
+                subprocess.run([npm_cmd, 'install'], check=True, cwd=self.project_root)
+                print("✅ Node.js 의존성 설치 완료")
+                return True
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+        
         try:
+            # 마지막 시도
             subprocess.run(['npm', 'install'], check=True, cwd=self.project_root)
             print("✅ Node.js 의존성 설치 완료")
             return True
@@ -112,14 +133,22 @@ class RaspberryPiBuildManager:
             subprocess.run([sys.executable, str(build_script)], 
                          check=True, cwd=self.backend_dir, input='n\n', text=True)
             
-            # 실행파일 확인
-            executable_path = self.backend_dir / 'dist' / 'ws_server'
-            if executable_path.exists():
-                print("✅ 파이썬 실행파일 빌드 완료")
-                return True
-            else:
+            # 실행파일 확인 (윈도우/리눅스 호환)
+            executable_names = ['ws_server.exe', 'ws_server']
+            executable_found = False
+            
+            for exe_name in executable_names:
+                executable_path = self.backend_dir / 'dist' / exe_name
+                if executable_path.exists():
+                    print(f"✅ 파이썬 실행파일 빌드 완료: {exe_name}")
+                    executable_found = True
+                    break
+            
+            if not executable_found:
                 print("❌ 실행파일이 생성되지 않았습니다.")
                 return False
+            
+            return True
                 
         except subprocess.CalledProcessError as e:
             print(f"❌ 파이썬 실행파일 빌드 실패: {e}")
@@ -129,22 +158,34 @@ class RaspberryPiBuildManager:
         """일렉트론 앱 빌드"""
         print(f"\n🔨 일렉트론 앱 빌드 중 (아키텍처: {arch})...")
         
-        # 빌드 명령어 결정
+        # 빌드 명령어 결정 (윈도우 호환성)
+        npm_commands = ['npm', 'npm.cmd']
+        
         if arch == 'arm64':
-            build_cmd = ['npm', 'run', 'build:raspberry']
+            build_script = 'build:raspberry'
         elif arch == 'armv7l':
-            build_cmd = ['npm', 'run', 'build:raspberry-32']
+            build_script = 'build:raspberry-32'
         else:
             print(f"❌ 지원하지 않는 아키텍처: {arch}")
             return False
         
-        try:
-            subprocess.run(build_cmd, check=True, cwd=self.project_root)
-            print("✅ 일렉트론 앱 빌드 완료")
-            return True
-        except subprocess.CalledProcessError as e:
-            print(f"❌ 일렉트론 앱 빌드 실패: {e}")
+        # npm 명령어 시도
+        build_success = False
+        for npm_cmd in npm_commands:
+            try:
+                build_cmd = [npm_cmd, 'run', build_script]
+                subprocess.run(build_cmd, check=True, cwd=self.project_root)
+                build_success = True
+                break
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+        
+        if not build_success:
+            print(f"❌ 일렉트론 빌드 실패")
             return False
+        
+        print("✅ 일렉트론 앱 빌드 완료")
+        return True
     
     def create_deployment_package(self, arch='arm64'):
         """배포 패키지 생성"""

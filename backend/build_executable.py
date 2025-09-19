@@ -18,6 +18,9 @@ def build_executable():
     print(f"Backend 디렉토리: {backend_dir}")
     print(f"프로젝트 루트: {project_root}")
     
+    # 타겟 플랫폼 확인
+    target_platform = os.environ.get('PYINSTALLER_TARGET', 'current')
+    
     # PyInstaller 명령어 구성
     pyinstaller_args = [
         sys.executable, '-m', 'PyInstaller',
@@ -43,6 +46,12 @@ def build_executable():
         # 메인 스크립트
         str(backend_dir / 'ws_server.py')
     ]
+    
+    # 크로스 플랫폼 빌드 설정
+    if target_platform == 'linux-arm64':
+        print("⚠️  크로스 플랫폼 빌드는 지원되지 않습니다.")
+        print("라즈베리파이에서 직접 빌드하거나 Python 스크립트를 사용하세요.")
+        return False
     
     print("PyInstaller 빌드 시작...")
     print(f"명령어: {' '.join(pyinstaller_args)}")

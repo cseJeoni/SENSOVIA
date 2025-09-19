@@ -179,11 +179,22 @@ function startPythonServer() {
   } else {
     // 패키징된 모드: 실행파일 우선, 없으면 Python 스크립트
     workingDir = path.join(process.resourcesPath, 'backend');
-    const executablePath = path.join(workingDir, 'dist', 'ws_server');
+    const executablePaths = [
+      path.join(workingDir, 'dist', 'ws_server'),     // Linux/macOS
+      path.join(workingDir, 'dist', 'ws_server.exe')  // Windows
+    ];
     const scriptPath = path.join(workingDir, 'ws_server.py');
     
-    // 실행파일 존재 여부 확인
-    if (fs.existsSync(executablePath)) {
+    // 실행파일 존재 여부 확인 (여러 확장자 시도)
+    let executablePath = null;
+    for (const exePath of executablePaths) {
+      if (fs.existsSync(exePath)) {
+        executablePath = exePath;
+        break;
+      }
+    }
+    
+    if (executablePath) {
       // PyInstaller로 빌드된 실행파일 사용
       command = executablePath;
       args = [];

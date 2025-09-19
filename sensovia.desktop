@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SENSOVIA
+Comment=SENSOVIA Motor Control Application
+Exec=/home/pi/sensovia/linux-arm64-unpacked/sensovia-electron --no-sandbox --disable-gpu
+Icon=/home/pi/sensovia/linux-arm64-unpacked/resources/app/assets/icon.png
+Terminal=false
+Categories=Utility;
+StartupNotify=true
