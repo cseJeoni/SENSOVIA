@@ -220,20 +220,29 @@ function startPythonServer() {
     cwd: workingDir
   });
 
-  // 파이썬 스크립트의 표준 출력 감시
+  // 파이썬 스크립트의 표준 출력 감시 (데이터 스트림 처리 강화)
+  let stdoutBuffer = '';
   pythonProcess.stdout.on('data', (data) => {
-    const message = data.toString();
-    console.log(`[Python Server] ${message.trim()}`);
+    stdoutBuffer += data.toString();
+    let newlineIndex;
+    while ((newlineIndex = stdoutBuffer.indexOf('\n')) !== -1) {
+      const line = stdoutBuffer.substring(0, newlineIndex).trim();
+      stdoutBuffer = stdoutBuffer.substring(newlineIndex + 1);
 
-    // SERVER_READY 신호를 감지하면 일렉트론 창 생성
-    if (message.trim() === 'SERVER_READY') {
-      console.log('✅ 파이썬 웹소켓 서버가 준비되었습니다. 프론트엔드 창을 생성합니다.');
-      createWindow();
-      
-      // 서버 준비 후 WebSocket 연결
-      setTimeout(() => {
-        connectWebSocket();
-      }, 1000);
+      if (line) {
+        console.log(`[Python Server] ${line}`);
+
+        // SERVER_READY 신호를 감지하면 일렉트론 창 생성
+        if (line === 'SERVER_READY') {
+          console.log('✅✅✅ SERVER_READY 신호 감지! 프론트엔드 창을 생성합니다. ✅✅✅');
+          createWindow();
+          
+          // 서버 준비 후 WebSocket 연결
+          setTimeout(() => {
+            connectWebSocket();
+          }, 1000);
+        }
+      }
     }
   });
 
