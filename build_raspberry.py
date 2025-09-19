@@ -154,6 +154,38 @@ class RaspberryPiBuildManager:
             print(f"❌ 파이썬 실행파일 빌드 실패: {e}")
             return False
     
+    def build_frontend(self):
+        """Vite로 프론트엔드 빌드"""
+        print("\n🔨 프론트엔드 빌드 중 (Vite)...")
+
+        # 윈도우 호환성을 위한 npm 명령어 시도
+        npm_commands = ['npm', 'npm.cmd']
+        build_success = False
+
+        for npm_cmd in npm_commands:
+            try:
+                # 'npm run build' 실행
+                build_cmd = [npm_cmd, 'run', 'build']
+                subprocess.run(build_cmd, check=True, cwd=self.project_root)
+                build_success = True
+                print(f"✅ 'npm run build' 성공 ({npm_cmd})")
+                break
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                continue
+
+        if not build_success:
+            print(f"❌ 프론트엔드 빌드 실패")
+            return False
+
+        # Vite 빌드 결과물 확인 (프로젝트 루트의 dist 폴더)
+        vite_dist_dir = self.project_root / 'dist'
+        if not vite_dist_dir.exists() or not any(vite_dist_dir.iterdir()):
+            print(f"❌ Vite 빌드 결과물 폴더({vite_dist_dir})가 비어있습니다.")
+            return False
+
+        print("✅ 프론트엔드 빌드 완료")
+        return True
+
     def build_electron_app(self, arch='arm64'):
         """일렉트론 앱 빌드"""
         print(f"\n🔨 일렉트론 앱 빌드 중 (아키텍처: {arch})...")
@@ -288,6 +320,7 @@ chmod +x start_sensovia.sh
             ("의존성 확인", self.check_dependencies),
             ("Python 의존성 설치", self.install_python_dependencies),
             ("Node.js 의존성 설치", self.install_node_dependencies),
+            ("프론트엔드 빌드", self.build_frontend),
             ("파이썬 실행파일 빌드", self.build_python_executable),
             ("일렉트론 앱 빌드", lambda: self.build_electron_app(arch)),
             ("배포 패키지 생성", lambda: self.create_deployment_package(arch))

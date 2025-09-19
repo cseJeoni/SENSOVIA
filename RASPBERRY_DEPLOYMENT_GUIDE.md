@@ -14,7 +14,7 @@
 ### 1.1 프로젝트 파일 전송
 ```bash
 # SCP로 전체 프로젝트 전송
-scp -r /path/to/SENSOVIA pi@라즈베리파이IP:/home/pi/
+scp -r C:\MSN\SENSOVIA pi@192.168.0.129:/home/pi/
 
 # 또는 Git clone
 git clone <프로젝트_저장소_URL> /home/pi/SENSOVIA
