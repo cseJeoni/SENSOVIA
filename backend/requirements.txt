@@ -1,0 +1,9 @@
+# SENSOVIA WebSocket Server Dependencies
+websockets>=11.0.3
+pyserial>=3.5
+gpiozero>=1.6.2
+smbus2>=0.4.2
+pyinstaller>=5.13.0
+
+# Optional dependencies for specific features
+RPi.GPIO>=0.7.1  # Raspberry Pi GPIO (alternative to gpiozero)

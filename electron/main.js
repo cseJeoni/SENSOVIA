@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain, protocol } = require('electron');
 const path = require('path');
 const WebSocket = require('ws');
+const { spawn } = require('child_process');
+const isDev = require('electron-is-dev');
 const fs = require('fs');
 
 // WebSocket 연결 관리 변수
@@ -11,10 +13,14 @@ const maxReconnectAttempts = 5;
 const reconnectDelay = 2000;
 const serverUrl = 'ws://127.0.0.1:8765';
 
+// 파이썬 서버 프로세스 관리
+let pythonProcess = null;
+
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1366,
-    height: 768,
+    width: 1920,
+    height: 1080,
+    fullscreen: true,  // 전체화면으로 시작
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
@@ -153,6 +159,89 @@ ipcMain.handle('websocket-status', () => {
   };
 });
 
+// 파이썬 서버를 시작하는 함수
+function startPythonServer() {
+  console.log('🚀 파이썬 웹소켓 서버를 시작합니다...');
+  
+  let command, args, workingDir;
+  
+  if (isDev) {
+    // 개발 모드: Python 스크립트 직접 실행
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+    const scriptPath = path.join(__dirname, '..', 'backend', 'ws_server.py');
+    workingDir = path.join(__dirname, '..', 'backend');
+    
+    command = pythonCmd;
+    args = [scriptPath];
+    
+    console.log(`개발 모드 - Python 명령어: ${pythonCmd}`);
+    console.log(`스크립트 경로: ${scriptPath}`);
+  } else {
+    // 패키징된 모드: 실행파일 우선, 없으면 Python 스크립트
+    workingDir = path.join(process.resourcesPath, 'backend');
+    const executablePath = path.join(workingDir, 'dist', 'ws_server');
+    const scriptPath = path.join(workingDir, 'ws_server.py');
+    
+    // 실행파일 존재 여부 확인
+    if (fs.existsSync(executablePath)) {
+      // PyInstaller로 빌드된 실행파일 사용
+      command = executablePath;
+      args = [];
+      console.log(`패키징된 모드 - 실행파일 사용: ${executablePath}`);
+    } else if (fs.existsSync(scriptPath)) {
+      // Python 스크립트 사용 (fallback)
+      const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
+      command = pythonCmd;
+      args = [scriptPath];
+      console.log(`패키징된 모드 - Python 스크립트 사용: ${scriptPath}`);
+    } else {
+      console.error('❌ 실행파일과 Python 스크립트 모두 찾을 수 없습니다.');
+      return;
+    }
+  }
+  
+  console.log(`작업 디렉토리: ${workingDir}`);
+  console.log(`개발 모드: ${isDev}`);
+  console.log(`실행 명령어: ${command} ${args.join(' ')}`);
+  
+  pythonProcess = spawn(command, args, {
+    stdio: ['pipe', 'pipe', 'pipe'],
+    cwd: workingDir
+  });
+
+  // 파이썬 스크립트의 표준 출력 감시
+  pythonProcess.stdout.on('data', (data) => {
+    const message = data.toString();
+    console.log(`[Python Server] ${message.trim()}`);
+
+    // SERVER_READY 신호를 감지하면 일렉트론 창 생성
+    if (message.trim() === 'SERVER_READY') {
+      console.log('✅ 파이썬 웹소켓 서버가 준비되었습니다. 프론트엔드 창을 생성합니다.');
+      createWindow();
+      
+      // 서버 준비 후 WebSocket 연결
+      setTimeout(() => {
+        connectWebSocket();
+      }, 1000);
+    }
+  });
+
+  // 파이썬 스크립트의 에러 출력 감시
+  pythonProcess.stderr.on('data', (data) => {
+    console.error(`[Python Server Error] ${data.toString()}`);
+  });
+
+  // 파이썬 프로세스 종료 감시
+  pythonProcess.on('close', (code) => {
+    console.log(`[Python Server] 프로세스가 종료되었습니다. 코드: ${code}`);
+    pythonProcess = null;
+  });
+
+  pythonProcess.on('error', (error) => {
+    console.error(`[Python Server] 프로세스 시작 오류: ${error.message}`);
+  });
+}
+
 app.whenReady().then(() => {
   // 커스텀 프로토콜 등록 (file:// 프로토콜 보안 문제 해결)
   protocol.registerFileProtocol('app', (request, callback) => {
@@ -161,16 +250,28 @@ app.whenReady().then(() => {
     callback({ path: filePath });
   });
 
-  const win = createWindow();
-  
-  // 앱 시작 시 WebSocket 자동 연결
-  setTimeout(() => {
-    connectWebSocket();
-  }, 1000);
+  // 파이썬 서버를 먼저 시작
+  startPythonServer();
   
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      // 서버가 이미 실행 중이면 바로 창 생성, 아니면 서버 재시작
+      if (pythonProcess) {
+        createWindow();
+      } else {
+        startPythonServer();
+      }
+    }
   });
+});
+
+// 앱 종료 시 파이썬 프로세스 정리
+app.on('will-quit', () => {
+  if (pythonProcess) {
+    console.log('🔪 파이썬 서버 프로세스를 종료합니다.');
+    pythonProcess.kill();
+    pythonProcess = null;
+  }
 });
 
 app.on('window-all-closed', () => {

@@ -1,12 +1,23 @@
 {
-  "name": "electron-ws-template",
+  "name": "sensovia-electron",
   "version": "1.0.0",
+  "description": "SENSOVIA Motor Control Application",
+  "author": "SENSOVIA Team",
+  "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"wait-on tcp:5173 && electron electron/main.js\"",
     "dev:react": "vite",
-    "start": "electron electron/main.js"
+    "start": "electron electron/main.js",
+    "build:raspberry": "electron-builder --linux --arm64 --config.target=AppImage --config.compression=store",
+    "build:raspberry-32": "electron-builder --linux --armv7l --config.target=AppImage --config.compression=store",
+    "build:raspberry-simple": "electron-builder --linux --arm64",
+    "build:python": "python backend/build_executable.py",
+    "build:full-raspberry": "python build_raspberry.py --arch arm64",
+    "build:full-raspberry-32": "python build_raspberry.py --arch armv7l",
+    "test:server": "python backend/ws_server.py"
   },
   "dependencies": {
+    "electron-is-dev": "^2.0.0",
     "electron-reload": "^2.0.0-alpha.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -18,10 +29,41 @@
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
     "electron": "^28.2.1",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "vite": "^5.1.0",
     "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.sensovia.electron",
+    "productName": "SENSOVIA",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "app/**/*",
+      "!backend/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/",
+        "to": "backend/",
+        "filter": ["**/*"]
+      }
+    ],
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["arm64", "armv7l"]
+        }
+      ],
+      "category": "Utility"
+    },
+    "buildDependenciesFromSource": false,
+    "nodeGypRebuild": false
   }
 }

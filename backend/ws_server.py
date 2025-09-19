@@ -638,6 +638,10 @@ async def push_motor_status():
 async def main():
     async with websockets.serve(handler, "0.0.0.0", 8765):
         print("[INFO] WebSocket 모터 서버 실행 중 (ws://0.0.0.0:8765)")
+        # 서버가 성공적으로 시작되면 일렉트론에 준비 신호 전송
+        print("SERVER_READY")
+        import sys
+        sys.stdout.flush()
         await push_motor_status()
 
 def cleanup_gpio():
