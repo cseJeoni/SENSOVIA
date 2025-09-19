@@ -8,7 +8,6 @@
     "dev": "concurrently \"npm run dev:react\" \"wait-on tcp:5173 && electron electron/main.js\"",
     "dev:react": "vite",
     "start": "electron electron/main.js",
-    "build": "vite build",
     "build:raspberry": "electron-builder --linux --arm64 --config.target=dir",
     "build:raspberry-32": "electron-builder --linux --armv7l --config.target=dir",
     "build:raspberry-simple": "electron-builder --linux --arm64",
@@ -45,7 +44,7 @@
     },
     "files": [
       "electron/**/*",
-      "dist/**/*",
+      "app/**/*",
       "!backend/**/*"
     ],
     "extraResources": [
