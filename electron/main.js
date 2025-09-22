@@ -15,6 +15,7 @@ function createWindow() {
   const win = new BrowserWindow({
     width: 1366,
     height: 768,
+    fullscreen: true,  // 전체화면 모드로 시작
     autoHideMenuBar: true,
     webPreferences: {
       contextIsolation: true,
