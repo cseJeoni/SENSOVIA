@@ -353,7 +353,7 @@ function initModal() {
     const closeBtn = document.getElementById('closeModalBtn');
 
     if (overlay) {
-        overlay.classList.add('active');
+        // overlay.classList.add('active'); // 자동으로 경고창 띄우는 코드 주석처리
 
         if (closeBtn) {
             closeBtn.addEventListener('click', () => {

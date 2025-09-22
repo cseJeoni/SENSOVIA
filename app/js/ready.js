@@ -454,24 +454,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  // 니들팁 경고창 표시
-  function showNeedleTipWarning() {
-    const modalOverlay = document.getElementById('modalOverlay');
-    if (modalOverlay) {
-      modalOverlay.style.display = 'flex';
-      console.log('[Ready.js] 니들팁 연결 경고창 표시');
-    }
-  }
-
-  // 니들팁 경고창 숨김
-  function hideNeedleTipWarning() {
-    const modalOverlay = document.getElementById('modalOverlay');
-    if (modalOverlay) {
-      modalOverlay.style.display = 'none';
-      console.log('[Ready.js] 니들팁 연결 경고창 숨김');
-    }
-  }
-
   // WebSocket 매니저 초기화 - WebSocketClient 사용
   if (!window.wsManager) {
     window.wsManager = new WebSocketClient();
@@ -503,12 +485,12 @@ document.addEventListener("DOMContentLoaded", function () {
     window.wsManager.on('gpio17_status', (data) => {
       console.log('[Ready.js] GPIO17 인터럽트 이벤트 수신:', data);
       
-      // GPIO17이 LOW이면 니들팁이 연결되지 않음
-      if (data.gpio17 === 'LOW') {
-        showNeedleTipWarning();
-      } else if (data.gpio17 === 'HIGH') {
-        hideNeedleTipWarning();
-      }
+      // // GPIO17이 LOW이면 니들팁이 연결되지 않음
+      // if (data.gpio17 === 'LOW') {
+      //   showNeedleTipWarning();
+      // } else if (data.gpio17 === 'HIGH') {
+      //   hideNeedleTipWarning();
+      // }
     });
 
     // 풋 스위치 신호 수신 시 사이클 실행
@@ -790,7 +772,22 @@ document.querySelector('.sidebar-icon .user-link')
       });
   }
 
-// sidebar, sidebar-Setting 아이콘 꾹 누르는 동안 icon-fill, 떼면 icon-white 효과
+// 초기 GPIO17 상태 확인 (연결 시 한 번만)
+function requestInitialGPIOStatus() {
+  if (window.wsManager && window.wsManager.sendCommand) {
+    console.log('[Ready.js] 초기 GPIO17 상태 확인 요청');
+    window.wsManager.sendCommand({cmd: 'get_gpio17_status'});
+  }
+}
+
+// 페이지 로드 시 WebSocket 연결 확인 후 GPIO 상태 읽기
+setTimeout(() => {
+  if (window.wsManager && window.wsManager.isConnected) {
+    requestInitialGPIOStatus();
+  }
+}, 2000); // WebSocket 연결 후 2초 대기
+
+// 여기부터 sidebar, sidebar-Setting 아이콘 꾹 누르는 동안 icon-fill, 떼면 icon-white 효과
 const iconMap = {
 'icon_User.svg': 'icon_User.svg',
 'icon_Home.svg': 'icon_Home.svg',
@@ -875,10 +872,3 @@ if (val == 0) {
   soundImg.src = '../icon-white/icon_Sound(3).svg';
 }
 }
-
-// 페이지 로드 시 WebSocket 연결 확인 후 GPIO 상태 읽기
-setTimeout(() => {
-  if (window.wsManager && window.wsManager.isConnected) {
-    requestGPIOStatus();
-  }
-}, 2000); // WebSocket 연결 후 2초 대기

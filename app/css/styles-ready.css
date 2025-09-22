@@ -641,16 +641,16 @@ circle:nth-child(2) {
 
     /* 전체 화면을 덮는 반투명 배경 */
     .modal-overlay {
-      display: none;
+      display: none !important; /* 강제로 숨김 */
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
       justify-content: center;
       align-items: center;
       z-index: 1000;
     }
     .modal-overlay.active {
-      display: flex;
+      display: none !important; /* active 상태에서도 강제로 숨김 */
     }
 
     /* 모달 박스 */
