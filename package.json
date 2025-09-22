@@ -20,9 +20,13 @@
     "files": [
       "electron/**/*",
       "app/**/*",
-      "node_modules/ws/**/*",
-      "!node_modules",
       "!src"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/ws",
+        "to": "node_modules/ws"
+      }
     ],
     "linux": {
       "target": [
