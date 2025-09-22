@@ -30,13 +30,10 @@ MTR20_CUTERA_OFFSET = 0x80
 MTR40_EEPROM_ADDRESS = 0x51
 MTR40_OFFSET = 0x70
 
-# --- [수정] GPIO 초기화 (gpiozero 라이브러리로 통합) ---
+# --- GPIO 초기화 (gpiozero 라이브러리) ---
 gpio_available = False
-pin18 = None
-pin23 = None # pin23 객체 추가
 pin0 = None  # GPIO0 for RF DTR control
 pin12 = None # GPIO12 for foot switch (풋 스위치)
-needle_tip_connected = False
 
 # RF 연결 관련 변수
 rf_connection = None
@@ -46,13 +43,7 @@ rf_connected = False
 foot_switch_queue = queue.Queue()
 
 try:
-    from gpiozero import DigitalInputDevice, Button, DigitalOutputDevice
-    
-    # GPIO18: 기존 DigitalInputDevice 유지
-    pin18 = DigitalInputDevice(18)
-    
-    # GPIO23: Button 클래스로 변경 (내부 풀업, 바운스 타임 지원)
-    pin23 = Button(23, pull_up=True, bounce_time=0.2)
+    from gpiozero import Button, DigitalOutputDevice
     
     # GPIO0: RF DTR 제어용 출력 핀
     pin0 = DigitalOutputDevice(0)
@@ -69,20 +60,6 @@ try:
     # GPIO27: LED 출력 (니들팁 분리됨 표시)
     pin27 = DigitalOutputDevice(27)
     
-    # 초기 니들팁 상태 설정 (is_pressed는 풀업 상태에서 LOW일 때 True)
-    needle_tip_connected = pin23.is_pressed
-    
-    # GPIO17 상태에 따른 LED 제어 함수
-    def update_needle_tip_leds():
-        if pin17.is_pressed:  # GPIO17이 HIGH (Button 클래스에서는 is_pressed 사용)
-            pin22.on()   # GPIO22 LED ON
-            pin27.off()  # GPIO27 LED OFF
-            print("[GPIO17] 니들팁 연결됨 - GPIO22 LED ON")
-        else:  # GPIO17이 LOW
-            pin22.off()  # GPIO22 LED OFF
-            pin27.on()   # GPIO27 LED ON
-            print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
-    
     # GPIO17 인터럽트 이벤트 핸들러
     def _on_needle_tip_connected():
         print("[GPIO17] 니들팁 연결 인터럽트 발생")
@@ -96,23 +73,22 @@ try:
         pin27.on()   # GPIO27 LED ON
         print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
     
+    # GPIO17 상태에 따른 LED 제어 함수
+    def update_needle_tip_leds():
+        if pin17.is_pressed:  # GPIO17이 HIGH (Button 클래스에서는 is_pressed 사용)
+            pin22.on()   # GPIO22 LED ON
+            pin27.off()  # GPIO27 LED OFF
+            print("[GPIO17] 니들팁 연결됨 - GPIO22 LED ON")
+        else:  # GPIO17이 LOW
+            pin22.off()  # GPIO22 LED OFF
+            pin27.on()   # GPIO27 LED ON
+            print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
+    
     # 초기 LED 상태 설정
     update_needle_tip_leds()
-    print(f"[GPIO23] 초기 니들팁 상태: {'연결됨' if needle_tip_connected else '분리됨'}")
     print(f"[GPIO0] RF DTR 핀 초기화 완료")
     print(f"[GPIO12] 풋 스위치 초기화 완료 (풀다운 설정)")
     print(f"[GPIO12] 초기 풋 스위치 상태: {'HIGH' if pin12.is_pressed else 'LOW'}")
-
-    # 니들팁 연결/해제 이벤트 핸들러 정의
-    def _on_tip_connected():
-        global needle_tip_connected
-        needle_tip_connected = True
-        print("[GPIO23] 니들팁 상태 변경: 연결됨")
-
-    def _on_tip_disconnected():
-        global needle_tip_connected
-        needle_tip_connected = False
-        print("[GPIO23] 니들팁 상태 변경: 분리됨")
 
     # 풋 스위치 이벤트 핸들러 정의 (동기 함수로 변경)
     def _on_foot_switch_pressed_sync():
@@ -141,8 +117,6 @@ try:
         print("[GPIO12] 풋 스위치 released 인터럽트 발생")
 
     # 이벤트 핸들러 할당
-    pin23.when_pressed = _on_tip_connected
-    pin23.when_released = _on_tip_disconnected
     pin12.when_pressed = _on_foot_switch_pressed_sync
     pin12.when_released = _on_foot_switch_released_sync
     pin17.when_pressed = _on_needle_tip_connected
@@ -154,7 +128,7 @@ try:
     print(f"[GPIO12] when_released: {pin12.when_released}")
     
     gpio_available = True
-    print("[OK] GPIO 18/23/12/17/22/27 초기화 완료 (gpiozero 라이브러리)")
+    print("[OK] GPIO 0/12/17/22/27 초기화 완료 (gpiozero 라이브러리)")
     print(f"[GPIO17] 니들팁 커넥트 핀 초기화 완료 (풀다운, 인터럽트 방식)")
     print(f"[GPIO17] 초기 니들팁 커넥트 상태: {'HIGH' if pin17.is_pressed else 'LOW'}")
     print(f"[GPIO22] LED 출력 핀 초기화 완료 (니들팁 연결 표시)")
@@ -487,26 +461,11 @@ async def push_motor_status():
 
         
         data = {}
-        # GPIO 상태 읽기
-        gpio18_state = "UNKNOWN"; gpio23_state = "UNKNOWN"; gpio12_state = "UNKNOWN"
-        if gpio_available:
-            if pin18:
-                gpio18_state = "HIGH" if pin18.value else "LOW"
-            # --- [수정] gpiozero 객체 속성으로 상태 읽기 ---
-            if pin23:
-                # is_pressed가 True이면 LOW 상태(연결됨), False이면 HIGH 상태(분리됨)
-                gpio23_state = "LOW" if pin23.is_pressed else "HIGH"
-            if pin12:
-                # 풋 스위치 상태 (풀다운 설정이므로 is_pressed가 True이면 HIGH)
-                gpio12_state = "HIGH" if pin12.is_pressed else "LOW"
-
         if motor_connected:
             data = {
                 "type": "status",
                 "data": {
                     "position": motor.position, "force": motor.force, "sensor": motor.sensor, "setPos": motor.setPos,
-                    "gpio18": gpio18_state, "gpio23": gpio23_state, "gpio12": gpio12_state,
-                    "needle_tip_connected": needle_tip_connected,
                     "motor_connected": True,
                     "rf_connected": rf_connected,
                 }
@@ -516,8 +475,6 @@ async def push_motor_status():
                 "type": "status",
                 "data": {
                     "motor_connected": False,
-                    "gpio18": gpio18_state, "gpio23": gpio23_state, "gpio12": gpio12_state,
-                    "needle_tip_connected": needle_tip_connected,
                     "rf_connected": rf_connected,
                 }
             }
@@ -535,13 +492,14 @@ async def main():
         await push_motor_status()
 
 def cleanup_gpio():
-    # --- [수정] gpiozero 객체 정리 ---
+    # --- gpiozero 객체 정리 ---
     if gpio_available:
         try:
-            if pin18: pin18.close()
-            if pin23: pin23.close()
             if pin0: pin0.close()
             if pin12: pin12.close()
+            if pin17: pin17.close()
+            if pin22: pin22.close()
+            if pin27: pin27.close()
             print("[OK] GPIO 리소스 정리 완료")
         except Exception as e:
             print(f"[ERROR] GPIO 정리 오류: {e}")
