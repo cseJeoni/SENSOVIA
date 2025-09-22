@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
       { id: 2, name: "RF", value: "1000ms" },
       { id: 3, name: "DEPTH", value: "2.0mm" },
       { id: 4, name: "MODE", value: "0.2s" },
-      { id: 5, name: "DELAT TIME", value: "100ms" }
+      { id: 5, name: "DELAY TIME", value: "100ms" }
   ];
 
   const tableContent = document.getElementById("table-content");
@@ -49,17 +49,106 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function addEventListeners() {
+      // 홀드 기능을 위한 변수들
+      let holdInterval = null;
+      let holdTimeout = null;
+      
+      // + 버튼 이벤트 리스너 (홀드 기능 포함)
       document.querySelectorAll(".increase").forEach(button => {
+          // 클릭 이벤트
           button.addEventListener("click", function () {
               updateValue(parseInt(this.dataset.id), "increase");
           });
+          
+          // 마우스 다운 - 홀드 시작
+          button.addEventListener("mousedown", function () {
+              const id = parseInt(this.dataset.id);
+              startHold(id, "increase");
+          });
+          
+          // 마우스 업/리브 - 홀드 중지
+          button.addEventListener("mouseup", stopHold);
+          button.addEventListener("mouseleave", stopHold);
+          
+          // 터치 이벤트
+          button.addEventListener("touchstart", function (e) {
+              e.preventDefault(); // 터치 시 클릭 이벤트 중복 방지
+              const id = parseInt(this.dataset.id);
+              updateValue(id, "increase"); // 즉시 한 번 실행
+              startHold(id, "increase");
+          });
+          
+          button.addEventListener("touchend", function (e) {
+              e.preventDefault();
+              stopHold();
+          });
+          
+          button.addEventListener("touchcancel", function (e) {
+              e.preventDefault();
+              stopHold();
+          });
       });
 
+      // - 버튼 이벤트 리스너 (홀드 기능 포함)
       document.querySelectorAll(".decrease").forEach(button => {
+          // 클릭 이벤트
           button.addEventListener("click", function () {
               updateValue(parseInt(this.dataset.id), "decrease");
           });
+          
+          // 마우스 다운 - 홀드 시작
+          button.addEventListener("mousedown", function () {
+              const id = parseInt(this.dataset.id);
+              startHold(id, "decrease");
+          });
+          
+          // 마우스 업/리브 - 홀드 중지
+          button.addEventListener("mouseup", stopHold);
+          button.addEventListener("mouseleave", stopHold);
+          
+          // 터치 이벤트
+          button.addEventListener("touchstart", function (e) {
+              e.preventDefault(); // 터치 시 클릭 이벤트 중복 방지
+              const id = parseInt(this.dataset.id);
+              updateValue(id, "decrease"); // 즉시 한 번 실행
+              startHold(id, "decrease");
+          });
+          
+          button.addEventListener("touchend", function (e) {
+              e.preventDefault();
+              stopHold();
+          });
+          
+          button.addEventListener("touchcancel", function (e) {
+              e.preventDefault();
+              stopHold();
+          });
       });
+      
+      // 홀드 시작 함수
+      function startHold(id, operation) {
+          // 기존 홀드 중지
+          stopHold();
+          
+          // 500ms 후 연속 실행 시작 (초기 딜레이)
+          holdTimeout = setTimeout(() => {
+              holdInterval = setInterval(() => {
+                  updateValue(id, operation);
+              }, 100); // 100ms 간격으로 연속 실행
+          }, 500);
+      }
+      
+      // 홀드 중지 함수
+      function stopHold() {
+          if (holdTimeout) {
+              clearTimeout(holdTimeout);
+              holdTimeout = null;
+          }
+          if (holdInterval) {
+              clearInterval(holdInterval);
+              holdInterval = null;
+          }
+      }
   }
 
   function updateValue(id, operation) {
@@ -161,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const depthItem = values.find(item => item.name === "DEPTH");
           const intensityItem = values.find(item => item.name === "INTENSITY");
           const rfItem = values.find(item => item.name === "RF");
-          const delayItem = values.find(item => item.name === "DELAT TIME");
+          const delayItem = values.find(item => item.name === "DELAY TIME");
           
           if (!depthItem || !intensityItem || !rfItem || !delayItem) {
               console.error("필수 파라미터가 누락되었습니다.");
