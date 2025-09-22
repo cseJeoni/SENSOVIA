@@ -66,12 +66,42 @@ try:
         pin22.on()   # GPIO22 LED ON
         pin27.off()  # GPIO27 LED OFF
         print("[GPIO17] 니들팁 연결됨 - GPIO22 LED ON")
+        
+        # 모든 연결된 클라이언트에게 GPIO17 상태 변경 알림
+        gpio17_event = {
+            "type": "gpio17_status",
+            "data": {
+                "gpio17": "HIGH",
+                "needle_tip_connected": True
+            }
+        }
+        for ws in connected_clients.copy():
+            try:
+                asyncio.create_task(ws.send(json.dumps(gpio17_event)))
+            except Exception as e:
+                print(f"[WARN] GPIO17 상태 전송 실패: {e}")
+                connected_clients.discard(ws)
     
     def _on_needle_tip_disconnected():
         print("[GPIO17] 니들팁 분리 인터럽트 발생")
         pin22.off()  # GPIO22 LED OFF
         pin27.on()   # GPIO27 LED ON
         print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
+        
+        # 모든 연결된 클라이언트에게 GPIO17 상태 변경 알림
+        gpio17_event = {
+            "type": "gpio17_status",
+            "data": {
+                "gpio17": "LOW",
+                "needle_tip_connected": False
+            }
+        }
+        for ws in connected_clients.copy():
+            try:
+                asyncio.create_task(ws.send(json.dumps(gpio17_event)))
+            except Exception as e:
+                print(f"[WARN] GPIO17 상태 전송 실패: {e}")
+                connected_clients.discard(ws)
     
     # GPIO17 상태에 따른 LED 제어 함수
     def update_needle_tip_leds():
@@ -83,6 +113,48 @@ try:
             pin22.off()  # GPIO22 LED OFF
             pin27.on()   # GPIO27 LED ON
             print("[GPIO17] 니들팁 분리됨 - GPIO27 LED ON")
+    
+    # RF 샷 중 LED 깜빡임 함수
+    async def blink_leds_during_rf_shot(rf_time_ms):
+        """RF 샷 지속 시간 동안 GPIO22(파란색)와 GPIO27(빨간색) LED를 번갈아 깜빡임"""
+        print(f"[LED] RF 샷 LED 깜빡임 시작 ({rf_time_ms}ms)")
+        
+        # 현재 LED 상태 저장
+        original_pin22_state = pin22.value
+        original_pin27_state = pin27.value
+        
+        # RF 샷 시간을 100ms 단위로 나누어 깜빡임
+        blink_interval = 0.1  # 100ms
+        total_time = rf_time_ms / 1000.0  # ms를 초로 변환
+        elapsed_time = 0
+        led_state = True  # True: GPIO22 ON, GPIO27 OFF
+        
+        try:
+            while elapsed_time < total_time:
+                if led_state:
+                    pin22.on()   # 파란색 LED ON
+                    pin27.off()  # 빨간색 LED OFF
+                else:
+                    pin22.off()  # 파란색 LED OFF
+                    pin27.on()   # 빨간색 LED ON
+                
+                led_state = not led_state  # 상태 토글
+                await asyncio.sleep(blink_interval)
+                elapsed_time += blink_interval
+        
+        finally:
+            # 원래 LED 상태로 복원
+            if original_pin22_state:
+                pin22.on()
+            else:
+                pin22.off()
+            
+            if original_pin27_state:
+                pin27.on()
+            else:
+                pin27.off()
+            
+            print(f"[LED] RF 샷 LED 깜빡임 완료, 원래 상태로 복원")
     
     # 초기 LED 상태 설정
     update_needle_tip_leds()
@@ -311,45 +383,63 @@ async def handler(websocket):
                         print(f"[EEPROM] eeprom_available: {eeprom_available}")
                         
                         if eeprom_available:
-                            # 현재 EEPROM 데이터 읽기
-                            print(f"[EEPROM] 현재 데이터 읽기 시작 - I2C_BUS: {I2C_BUS}, Address: 0x50, Offset: 0x10")
-                            current_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
-                            print(f"[EEPROM] 현재 데이터: {current_data}")
-                            
-                            # shotCount 증가
-                            old_shot_count = current_data["shot_count"]
-                            new_shot_count = old_shot_count + 1
-                            print(f"[EEPROM] shotCount 증가: {old_shot_count} -> {new_shot_count}")
-                            
-                            # EEPROM에 업데이트된 shotCount 쓰기
-                            manufacture_date_parts = current_data["manufacture_date"].split("-")
-                            manufacture_date = {
-                                "year": int(manufacture_date_parts[0]),
-                                "month": int(manufacture_date_parts[1]),
-                                "day": int(manufacture_date_parts[2])
-                            }
-                            print(f"[EEPROM] 제조일자: {manufacture_date}")
-                            
-                            print(f"[EEPROM] EEPROM 쓰기 시작...")
-                            write_eeprom_data(
-                                I2C_BUS, 0x50, 0x10,
-                                current_data["tip_type"],
-                                new_shot_count,
-                                manufacture_date,
-                                current_data["manufacturer"]
-                            )
-                            print(f"[EEPROM] EEPROM 쓰기 완료")
-                            
-                            # 쓰기 완료 후 잠시 대기
-                            import time
-                            time.sleep(0.1)
-                            
-                            # 업데이트된 데이터 다시 읽기
-                            print(f"[EEPROM] 업데이트된 데이터 다시 읽기...")
-                            updated_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
-                            print(f"[EEPROM] 업데이트된 데이터: {updated_data}")
-                            
-                            result = {"success": True, "data": updated_data}
+                            try:
+                                # I2C 버스 재초기화 시도
+                                import smbus2
+                                bus = smbus2.SMBus(I2C_BUS)
+                                
+                                # EEPROM 연결 테스트
+                                test_read = bus.read_byte_data(0x50, 0x10)
+                                print(f"[EEPROM] I2C 연결 테스트 성공: {test_read}")
+                                bus.close()
+                                
+                                # 현재 EEPROM 데이터 읽기
+                                print(f"[EEPROM] 현재 데이터 읽기 시작 - I2C_BUS: {I2C_BUS}, Address: 0x50, Offset: 0x10")
+                                current_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                                print(f"[EEPROM] 현재 데이터: {current_data}")
+                                
+                                # shotCount 증가
+                                old_shot_count = current_data["shot_count"]
+                                new_shot_count = old_shot_count + 1
+                                print(f"[EEPROM] shotCount 증가: {old_shot_count} -> {new_shot_count}")
+                                
+                                # EEPROM에 업데이트된 shotCount 쓰기
+                                manufacture_date_parts = current_data["manufacture_date"].split("-")
+                                manufacture_date = {
+                                    "year": int(manufacture_date_parts[0]),
+                                    "month": int(manufacture_date_parts[1]),
+                                    "day": int(manufacture_date_parts[2])
+                                }
+                                print(f"[EEPROM] 제조일자: {manufacture_date}")
+                                
+                                print(f"[EEPROM] EEPROM 쓰기 시작...")
+                                write_eeprom_data(
+                                    I2C_BUS, 0x50, 0x10,
+                                    current_data["tip_type"],
+                                    new_shot_count,
+                                    manufacture_date,
+                                    current_data["manufacturer"]
+                                )
+                                print(f"[EEPROM] EEPROM 쓰기 완료")
+                                
+                                # 쓰기 완료 후 잠시 대기
+                                import time
+                                time.sleep(0.1)
+                                
+                                # 업데이트된 데이터 다시 읽기
+                                print(f"[EEPROM] 업데이트된 데이터 다시 읽기...")
+                                updated_data = read_eeprom_data(I2C_BUS, 0x50, 0x10)
+                                print(f"[EEPROM] 업데이트된 데이터: {updated_data}")
+                                
+                                result = {"success": True, "data": updated_data}
+                                
+                            except OSError as oe:
+                                if oe.errno == 121:  # Remote I/O error
+                                    print(f"[EEPROM] I2C 통신 오류 (Errno 121): EEPROM이 연결되지 않았거나 I2C 버스에 문제가 있습니다.")
+                                    result = {"success": False, "error": "EEPROM I2C 통신 오류: 하드웨어 연결을 확인하세요"}
+                                else:
+                                    print(f"[EEPROM] I2C OSError: {oe}")
+                                    result = {"success": False, "error": f"I2C 오류: {str(oe)}"}
                         else:
                             print(f"[EEPROM] EEPROM 기능 사용 불가")
                             result = {"success": False, "error": "EEPROM 기능 사용 불가"}
@@ -365,6 +455,10 @@ async def handler(websocket):
                         intensity = data.get("intensity", 50)  # INTENSITY 값 (기본값 50%)
                         rf_time = data.get("rf_time", 60)      # RF 시간 값 (기본값 60ms)
                         
+                        # RF 샷 중 LED 깜빡임 시작
+                        if gpio_available and pin22 and pin27:
+                            asyncio.create_task(blink_leds_during_rf_shot(rf_time))
+                        
                         # 1MHz 고정, level과 ontime은 같은 값으로 설정
                         frame = build_rf_shot_command(
                             rf_1MHz_checked=True,
@@ -378,10 +472,31 @@ async def handler(websocket):
                         await websocket.send(json.dumps({"type": "rf_shot", "result": "RF 샷 명령 전송 완료"}))
                     else:
                         await websocket.send(json.dumps({"type": "rf_shot", "result": "RF 연결되지 않음"}))
+                elif data["cmd"] == "get_gpio17_status":
+                    # 초기 GPIO17 상태 확인 (연결 시 한 번만)
+                    if gpio_available and pin17:
+                        gpio17_state = "HIGH" if pin17.is_pressed else "LOW"
+                        needle_tip_connected = pin17.is_pressed
+                        
+                        gpio17_event = {
+                            "type": "gpio17_status",
+                            "data": {
+                                "gpio17": gpio17_state,
+                                "needle_tip_connected": needle_tip_connected
+                            }
+                        }
+                        await websocket.send(json.dumps(gpio17_event))
+                        print(f"[GPIO17] 초기 상태 전송: {gpio17_state}")
+                    else:
+                        await websocket.send(json.dumps({"type": "gpio17_status", "data": {"gpio17": "UNKNOWN", "needle_tip_connected": False}}))
                 elif data["cmd"] == "rf_dtr_high":
                     # RF DTR HIGH 명령 처리 (GPIO0 제어)
                     if gpio_available and pin0:
                         rf_time = data.get("rf_time", 60)  # RF 시간 값 (ms)
+                        
+                        # RF 샷 중 LED 깜빡임 시작
+                        if gpio_available and pin22 and pin27:
+                            asyncio.create_task(blink_leds_during_rf_shot(rf_time))
                         
                         # DTR HIGH 설정
                         pin0.on()

@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
                           window.wsManager.off('shot_increment', handleShotIncrement);
                           
                           // 백엔드 응답 형식에 맞게 수정
-                          if (result && (result.success || result.status === 'success' || result.includes('성공'))) {
+                          if (result && (result.success || result.status === 'success' || (typeof result === 'string' && result.includes('성공')))) {
                               console.log("SHOT COUNT 증가 완료:", result);
                               resolve(result);
                           } else {
@@ -357,27 +357,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // 초기 렌더링
   renderPage();
 
-  // 니들팁 연결 상태 확인 함수
-  function checkNeedleTipConnection() {
-    if (window.wsManager && window.wsManager.motorStatus) {
-      const gpio17Status = window.wsManager.motorStatus.gpio17;
-      console.log('[Ready.js] GPIO17 상태:', gpio17Status);
-      
-      // GPIO17이 LOW이면 니들팁이 연결되지 않음 (UNKNOWN 상태는 무시)
-      if (gpio17Status === 'LOW' || gpio17Status === '0' || gpio17Status === 0) {
-        showNeedleTipWarning();
-      } else if (gpio17Status === 'HIGH' || gpio17Status === '1' || gpio17Status === 1) {
-        hideNeedleTipWarning();
-      }
-      // UNKNOWN 상태일 때는 아무것도 하지 않음
-    }
-  }
-
-  // GPIO 상태 읽기 명령 전송
-  function requestGPIOStatus() {
+  // 초기 GPIO17 상태 확인 (연결 시 한 번만)
+  function requestInitialGPIOStatus() {
     if (window.wsManager && window.wsManager.sendCommand) {
-      console.log('[Ready.js] GPIO 상태 읽기 요청');
-      window.wsManager.sendCommand({cmd: 'get_status'});
+      console.log('[Ready.js] 초기 GPIO17 상태 확인 요청');
+      window.wsManager.sendCommand({cmd: 'get_gpio17_status'});
     }
   }
 
@@ -410,9 +394,9 @@ document.addEventListener("DOMContentLoaded", function () {
     window.wsManager.on('connected', () => {
       console.log('[Ready.js] WebSocket 연결됨');
       updateConnectionStatus(true);
-      // 연결 후 GPIO 상태 읽기
+      // 연결 후 초기 GPIO17 상태 확인
       setTimeout(() => {
-        requestGPIOStatus();
+        requestInitialGPIOStatus();
       }, 500);
     });
 
@@ -424,8 +408,18 @@ document.addEventListener("DOMContentLoaded", function () {
     // 모터 상태 업데이트
     window.wsManager.on('motor_status', (status) => {
       updateMotorStatus(status);
-      // 모터 상태 업데이트 시 니들팁 연결 상태도 확인
-      checkNeedleTipConnection();
+    });
+
+    // GPIO17 상태 변경 이벤트 (인터럽트 기반)
+    window.wsManager.on('gpio17_status', (data) => {
+      console.log('[Ready.js] GPIO17 인터럽트 이벤트 수신:', data);
+      
+      // GPIO17이 LOW이면 니들팁이 연결되지 않음
+      if (data.gpio17 === 'LOW') {
+        showNeedleTipWarning();
+      } else if (data.gpio17 === 'HIGH') {
+        hideNeedleTipWarning();
+      }
     });
 
     // 풋 스위치 신호 수신 시 사이클 실행

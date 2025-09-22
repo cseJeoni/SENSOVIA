@@ -13,8 +13,6 @@ class WebSocketClient {
             sensor: 0,
             setPos: 0,
             gpio17: 'UNKNOWN',
-            gpio18: 'UNKNOWN',
-            gpio23: 'UNKNOWN',
             needle_tip_connected: false
         };
         
@@ -106,6 +104,14 @@ class WebSocketClient {
                 // SHOT COUNT 증가 결과
                 console.log('[WebSocket Client] SHOT COUNT 증가 결과:', data.result);
                 this.emit('shot_increment', data.result);
+                break;
+                
+            case 'gpio17_status':
+                // GPIO17 상태 변경 이벤트
+                console.log('[WebSocket Client] GPIO17 상태 변경:', data.data);
+                this.motorStatus.gpio17 = data.data.gpio17;
+                this.motorStatus.needle_tip_connected = data.data.needle_tip_connected;
+                this.emit('gpio17_status', data.data);
                 break;
                 
             default:
